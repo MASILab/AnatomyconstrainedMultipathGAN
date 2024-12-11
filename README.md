@@ -1,0 +1,2 @@
+# AnatomyconstrainedMultipathGAN
+Segmentation guided CT kernel harmonization using MultipathcycleGAN and TotalSegmentator
