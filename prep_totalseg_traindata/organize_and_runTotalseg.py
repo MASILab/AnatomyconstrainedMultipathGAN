@@ -23,23 +23,27 @@ def make_data():
 
 def run_totalseg(input_dir):
     #Run TotalSeg and tissue types to obtain labels"
-    for directory in tqdm(os.listdir(input_dir)):
-        nift_file = os.listdir(os.path.join(input_dir, directory))[0]
-        nifti = os.path.join(input_dir, directory, nift_file)
-        output_dir = os.path.join(input_dir, directory, "segmentations")
-        os.makedirs(output_dir, exist_ok=True)
-        print(f"TotalSegmentator -i {nifti} -o {output_dir}") #All structures 
-        os.system(f"TotalSegmentator -i {nifti} -o {output_dir}")
-        print(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types") #Tissue types model
-        os.system(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types")
 
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard_masked")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard_masked")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft_masked")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft")
+    for directory in tqdm(os.listdir(input_dir)):
+        main_file = os.listdir(os.path.join(input_dir, directory))
+        for file in main_file:
+            if file.endswith(".nii.gz"):
+                nift_file = file
+                nifti = os.path.join(input_dir, directory, nift_file)
+                output_dir = os.path.join(input_dir, directory, "segmentations")
+                os.makedirs(output_dir, exist_ok=True)
+                print(f"TotalSegmentator -i {nifti} -o {output_dir}") #All structures 
+                os.system(f"TotalSegmentator -i {nifti} -o {output_dir}")
+                print(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types") #Tissue types model
+                os.system(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types")
+
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard_masked")
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked")
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard_masked")
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft_masked")
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard")
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft")
 run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/hard")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/soft")
+# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/soft")
 
 
