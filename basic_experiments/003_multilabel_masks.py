@@ -4,8 +4,16 @@ import nibabel as nib
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
-paths = ["/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard_masked",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked",
+# paths = ["/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard_masked",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard_masked",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft_masked",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/hard",
+#          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/soft"]
+
+paths = ["/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked",
          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard_masked",
          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft_masked",
          "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard",
@@ -21,10 +29,10 @@ masks = ["lung_lower_lobe_left.nii.gz", "lung_lower_lobe_right.nii.gz", "lung_up
          "rib_left_11.nii.gz", "rib_left_12.nii.gz", "rib_right_1.nii.gz", "rib_right_2.nii.gz", "rib_right_3.nii.gz", "rib_right_4.nii.gz", "rib_right_5.nii.gz",
          "rib_right_6.nii.gz", "rib_right_7.nii.gz", "rib_right_8.nii.gz", "rib_right_9.nii.gz", "rib_right_10.nii.gz", "rib_right_11.nii.gz", "rib_right_12.nii.gz", "spleen.nii.gz"]
 
-def process_folder(folder):
-    for files in os.listdir(os.path.join(paths[0], folder)):
+def process_folder(folder, path):
+    for files in os.listdir(os.path.join(path, folder)):
         fname = files.split('.nii.gz')[0]
-        segmentations_path = os.path.join(paths[0], folder, 'segmentations')
+        segmentations_path = os.path.join(path, folder, 'segmentations')
         llll = os.path.join(segmentations_path, masks[0])
         llrl = os.path.join(segmentations_path, masks[1])
         lul = os.path.join(segmentations_path, masks[2])
@@ -173,5 +181,6 @@ def process_folder(folder):
         nib.save(nifti_mask, os.path.join(segmentations_path, fname + '_multilabel.nii.gz'))
 
 # Use joblib to parallelize the processing
-folders = os.listdir(paths[0])
-Parallel(n_jobs=3)(delayed(process_folder)(folder) for folder in tqdm(folders))
+for path in tqdm(paths):
+    folders = os.listdir(path)
+    Parallel(n_jobs=3)(delayed(process_folder)(folder, path) for folder in tqdm(folders))
