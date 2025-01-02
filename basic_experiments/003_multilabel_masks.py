@@ -278,4 +278,4 @@ def process_folder(path, folder):
 # Use joblib to parallelize the processing
 for path in paths:
     folders = os.listdir(path)
-    Parallel(n_jobs=12)(delayed(process_folder)(path, folder) for folder in tqdm(folders))
+    Parallel(n_jobs=10)(delayed(process_folder)(path, folder) for folder in tqdm(folders))
