@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 #Write trial code to move all the files into corresponding folders. 
 def make_data():
-    siemens_hard = "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft"
+    siemens_hard = "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked"
     niftis = os.listdir(siemens_hard)
 
     for file in tqdm(niftis):
@@ -37,13 +37,16 @@ def run_totalseg(input_dir):
                 print(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types") #Tissue types model
                 os.system(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types")
 
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard_masked")
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked")
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard_masked")
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft_masked")
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard")
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft")
-run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/hard")
-# run_totalseg("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/soft")
+
+
+
+run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard_masked")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/hard_masked")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/soft_masked")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/hard")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/soft")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/hard")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/soft")
 
 

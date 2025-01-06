@@ -7,10 +7,15 @@ import nibabel as nib
 import numpy as np
 
 #Read the dataframes, read the hard and soft uids. Replace the uids with the pids
-b30f_b50f = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B50f_B30f_data.csv")
-c_d = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D_data.csv")
-standard_bone = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE_data.csv")
-standard_lung = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG_data.csv")
+# b30f_b50f = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B50f_B30f_data.csv")
+# c_d = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D_data.csv")
+# standard_bone = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE_data.csv")
+# standard_lung = pd.read_csv("/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG_data.csv") 
+
+b30f_b50f = pd.read_csv("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B50f_B30f_data.csv")
+c_d = pd.read_csv("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D_data.csv")
+standard_bone = pd.read_csv("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE_data.csv")
+standard_lung = pd.read_csv("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG_data.csv")
 
 nlst_t0 = "/nfs2/NLST/NIfTI/T0_all"
 
@@ -39,6 +44,11 @@ def copy_data(dataframe, hard_kernel_folder, soft_kernel_folder):
 # copy_data(c_d, "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard", "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft")
 # copy_data(standard_bone, "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/hard", "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/soft")
 # copy_data(standard_lung, "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard", "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft")
+
+copy_data(b30f_b50f, "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft")
+copy_data(c_d, "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/hard", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/soft")
+copy_data(standard_bone, "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/hard", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/soft")
+copy_data(standard_lung, "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/hard", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/soft")
 
 def apply_circular_mask(input_path, out_path):
     """
@@ -73,10 +83,10 @@ def apply_circular_mask(input_path, out_path):
 
 
 directories = [
-    "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard",
-    "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft",
-    "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard",
-    "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft",
+    "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard",
+    "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft",
+    "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/hard",
+    "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/soft",
 ]
 
 for directory in tqdm(directories):
