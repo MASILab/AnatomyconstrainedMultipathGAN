@@ -192,14 +192,14 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 import gc
 
-paths = ["/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/hard_masked",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/B30f_B50f/soft_masked",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/hard_masked",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/C_D/soft_masked",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/hard",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_LUNG/soft",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/hard",
-         "/valiant02/masi/krishar1/TotalSegmentator_masks_CTkernel_MIDL/STANDARD_BONE/soft"]
+paths = ["/fs5/p_masi/krishar1/MIDL/B30f_B50f/hard_masked",
+         "/fs5/p_masi/krishar1/MIDL/B30f_B50f/soft_masked",
+         "/fs5/p_masi/krishar1/MIDL/C_D/hard_masked",
+         "/fs5/p_masi/krishar1/MIDL/C_D/soft_masked",
+         "/fs5/p_masi/krishar1/MIDL/STANDARD_LUNG/hard",
+         "/fs5/p_masi/krishar1/MIDL/STANDARD_LUNG/soft",
+         "/fs5/p_masi/krishar1/MIDL/STANDARD_BONE/hard",
+         "/fs5/p_masi/krishar1/MIDL/STANDARD_BONE/soft"]
 
 masks = ["lung_lower_lobe_left.nii.gz", "lung_lower_lobe_right.nii.gz", "lung_upper_lobe_left.nii.gz", "lung_upper_lobe_right.nii.gz", "lung_middle_lobe_right.nii.gz",
          "skeletal_muscle.nii.gz", "subcutaneous_fat.nii.gz", "trachea.nii.gz", "liver.nii.gz", "heart.nii.gz", "aorta.nii.gz", "kidney_left.nii.gz", "kidney_right.nii.gz",
@@ -207,7 +207,9 @@ masks = ["lung_lower_lobe_left.nii.gz", "lung_lower_lobe_right.nii.gz", "lung_up
          "subclavian_artery_left.nii.gz", "subclavian_artery_right.nii.gz", "superior_vena_cava.nii.gz", "rib_left_1.nii.gz", "rib_left_2.nii.gz", "rib_left_3.nii.gz",
          "rib_left_4.nii.gz", "rib_left_5.nii.gz", "rib_left_6.nii.gz", "rib_left_7.nii.gz", "rib_left_8.nii.gz", "rib_left_9.nii.gz", "rib_left_10.nii.gz",
          "rib_left_11.nii.gz", "rib_left_12.nii.gz", "rib_right_1.nii.gz", "rib_right_2.nii.gz", "rib_right_3.nii.gz", "rib_right_4.nii.gz", "rib_right_5.nii.gz",
-         "rib_right_6.nii.gz", "rib_right_7.nii.gz", "rib_right_8.nii.gz", "rib_right_9.nii.gz", "rib_right_10.nii.gz", "rib_right_11.nii.gz", "rib_right_12.nii.gz", "spleen.nii.gz"]
+         "rib_right_6.nii.gz", "rib_right_7.nii.gz", "rib_right_8.nii.gz", "rib_right_9.nii.gz", "rib_right_10.nii.gz", "rib_right_11.nii.gz", "rib_right_12.nii.gz", "spleen.nii.gz", 
+         "costal_cartilages.nii.gz", "adrenal_gland_left.nii.gz", "adrenal_gland_right.nii.gz", "colon.nii.gz", "clavicula_left.nii.gz", "clavicula_right.nii.gz", "duodenum.nii.gz", 
+         "gallbladder.nii.gz", "portal_vein_and_splenic_vein.nii.gz", "scapula_left.nii.gz", "scapula_right.nii.gz", "sternum.nii.gz"]
 
 def process_folder(path, folder):
     for files in os.listdir(os.path.join(path, folder)):
@@ -228,6 +230,9 @@ def process_folder(path, folder):
         subclavian_artery_masks = [masks[18], masks[19]]
         left_rib_masks = masks[21:33]
         right_rib_masks = masks[33:45]
+        adrenal_gland_masks = [masks[47], masks[48]]
+        clavicle_masks = [masks[50], masks[51]]
+        scapula_masks = [masks[55], masks[56]]
 
         # Load and process each mask one by one
         for mask in masks:
@@ -268,6 +273,24 @@ def process_folder(path, folder):
                     multilabel_mask[mask_data == 1] = 16
                 elif mask == masks[45]:  # spleen
                     multilabel_mask[mask_data == 1] = 17
+                elif mask == masks[46]:  # costal_cartilages
+                    multilabel_mask[mask_data == 1] = 18
+                elif mask in adrenal_gland_masks:
+                    multilabel_mask[mask_data == 1] = 19
+                elif mask == masks[49]:  # colon
+                    multilabel_mask[mask_data == 1] = 20
+                elif mask in clavicle_masks:
+                    multilabel_mask[mask_data == 1] = 21
+                elif mask == masks[52]:  # duodenum
+                    multilabel_mask[mask_data == 1] = 22
+                elif mask == masks[53]:  # gallbladder
+                    multilabel_mask[mask_data == 1] = 23
+                elif mask == masks[54]:  # portal_vein_and_splenic_vein
+                    multilabel_mask[mask_data == 1] = 24
+                elif mask in scapula_masks:
+                    multilabel_mask[mask_data == 1] = 25
+                elif mask == masks[57]: #Sternum
+                    multilabel_mask[mask_data == 1] = 26
                 del mask_data
                 gc.collect()
 
