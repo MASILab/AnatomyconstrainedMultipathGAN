@@ -1,6 +1,7 @@
 import os 
 import shutil 
-from tqdm import tqdm 
+from tqdm import tqdm
+from joblib import Parallel, delayed
 
 #Run TotalSeg all tissues. Run TotalSeg tissue types as well. 
 
@@ -21,9 +22,33 @@ def make_data():
                 os.makedirs(folder_path)
             shutil.move(file_path, folder_path)
 
-def run_totalseg(input_dir):
-    #Run TotalSeg and tissue types to obtain labels"
+# def run_totalseg(input_dir):
+#     #Run TotalSeg and tissue types to obtain labels"
 
+#     for directory in tqdm(os.listdir(input_dir)):
+#         main_file = os.listdir(os.path.join(input_dir, directory))
+#         for file in main_file:
+#             if file.endswith(".nii.gz"):
+#                 nift_file = file
+#                 nifti = os.path.join(input_dir, directory, nift_file)
+#                 output_dir = os.path.join(input_dir, directory, "segmentations")
+#                 os.makedirs(output_dir, exist_ok=True)
+#                 print(f"TotalSegmentator -i {nifti} -o {output_dir}") #All structures 
+#                 os.system(f"TotalSegmentator -i {nifti} -o {output_dir}")
+#                 print(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types") #Tissue types model
+#                 os.system(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types")
+
+
+
+def run_totalseg(input_dir, n_jobs=5):
+    def process_file(nifti, output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+        print(f"TotalSegmentator -i {nifti} -o {output_dir}") # All structures
+        os.system(f"TotalSegmentator -i {nifti} -o {output_dir}")
+        print(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types") # Tissue types model
+        os.system(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types")
+
+    tasks = []
     for directory in tqdm(os.listdir(input_dir)):
         main_file = os.listdir(os.path.join(input_dir, directory))
         for file in main_file:
@@ -31,22 +56,21 @@ def run_totalseg(input_dir):
                 nift_file = file
                 nifti = os.path.join(input_dir, directory, nift_file)
                 output_dir = os.path.join(input_dir, directory, "segmentations")
-                os.makedirs(output_dir, exist_ok=True)
-                print(f"TotalSegmentator -i {nifti} -o {output_dir}") #All structures 
-                os.system(f"TotalSegmentator -i {nifti} -o {output_dir}")
-                print(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types") #Tissue types model
-                os.system(f"TotalSegmentator -i {nifti} -o {output_dir} -ta tissue_types")
+                tasks.append(delayed(process_file)(nifti, output_dir))
+
+    Parallel(n_jobs=n_jobs)(tasks)  # Use a controlled number of threads
+
+# Example usage
+# run_totalseg('/path/to/input_dir', n_jobs=4)
 
 
-
-
-run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard_masked")
+# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard_masked")
 # run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked")
 # run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/hard_masked")
 # run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/soft_masked")
 # run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/hard")
 # run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/soft")
-# run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/hard")
+run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/hard")
 # run_totalseg("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/soft")
 
 
