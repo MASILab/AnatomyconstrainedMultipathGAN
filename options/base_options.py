@@ -70,6 +70,8 @@ class BaseOptions():
         parser.add_argument('--wandb_project_name', type=str, default='CycleGAN-and-pix2pix', help='specify wandb project name')
         parser.add_argument("--source_kernel", type=str, help="Parameter to specify source_kernel")
         parser.add_argument("--target_kernel", type=str, help="Parameter to specify target_kernel")
+        parser.add_argument("--source_kernel_mask", type=str, help="Parameter to specify source_kernel_mask")
+        parser.add_argument("--target_kernel_mask", type=str, help="Parameter to specify target_kernel_mask")
         self.initialized = True
         return parser
 
