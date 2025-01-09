@@ -4,7 +4,6 @@ from data.image_folder import make_dataset
 import random
 import numpy as np 
 import nibabel as nib 
-from scipy.interpolate import interp1d
 import torch
 from torch.utils.data import DataLoader, Dataset
  
@@ -53,9 +52,6 @@ class UnalignedDataset(BaseDataset):
         self.subset_B = int(0.2 * self.B_size)
         self.subset_C = int(0.2 * self.C_size)
         self.subset_D = int(0.2 * self.D_size)
-
-        #Robust way of doing clipping 
-        self.normalizer = interp1d([-1024,3072], [-1,1])
 
     def __getitem__(self, index):
         """Return a data point and its metadata information.
@@ -111,13 +107,9 @@ class UnalignedDataset(BaseDataset):
 
 
     def normalize(self, input_slice_path, input_mask_path):
-        """Normalize input slice and return as a tensor ranging from [-1,1]"""
-        nift_clip = np.clip(nib.load(input_slice_path).get_fdata()[:,:,0], -1024, 3072)
-        norm = self.normalizer(nift_clip)
-        tensor = torch.from_numpy(norm)
-        torch_tensor = tensor.unsqueeze(0).float()
+        nift_data = nib.load(input_slice_path).get_fdata()[:,:,0]
+        torch_tensor = torch.from_numpy(nift_data).unsqueeze(0).float()
         nift_mask = nib.load(input_mask_path).get_fdata()[:,:,0]
         mask = torch.from_numpy(nift_mask)
-        mask_tensor = mask.unsqueeze(0).float()
-
+        mask_tensor = mask.unsqueeze(0).long()
         return torch_tensor, mask_tensor

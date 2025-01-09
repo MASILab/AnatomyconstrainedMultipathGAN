@@ -24,18 +24,20 @@ class VanillaUnalignedDataset(BaseDataset):
 
         #When training for four domains, use this code from lines 33-51
         self.dir_A = os.path.join(opt.dataroot, opt.phase + opt.source_kernel)  
-        self.dir_B = os.path.join(opt.dataroot, opt.phase + opt.target_kernel) 
+        self.dir_B = os.path.join(opt.dataroot, opt.phase + opt.target_kernel)
+        self.mask_dirA = os.path.join(opt.dataroot, opt.phase + opt.source_kernel_mask)
+        self.mask_dirB = os.path.join(opt.dataroot, opt.phase + opt.target_kernel_mask)
         print(self.dir_A)
         print(self.dir_B)
+        print(self.mask_dirA)
+        print(self.mask_dirB)
         self.A_paths = sorted(make_dataset(self.dir_A, opt.max_dataset_size))   
-        self.B_paths = sorted(make_dataset(self.dir_B, opt.max_dataset_size))    
-        self.A_size = len(self.A_paths)  # get the size of dataset A
-        self.B_size = len(self.B_paths)  # get the size of dataset B
-        # input_nc = self.opt.input_nc    
-        # output_nc = self.opt.output_nc    
+        self.B_paths = sorted(make_dataset(self.dir_B, opt.max_dataset_size))
+        self.mask_A_paths = sorted(make_dataset(self.mask_dirA, opt.max_dataset_size))
+        self.mask_B_paths = sorted(make_dataset(self.mask_dirB, opt.max_dataset_size))    
+        self.A_size = len(self.A_paths)
+        self.B_size = len(self.B_paths)    
 
-        #Robust way of doing clipping 
-        self.normalizer = interp1d([-1024,3072], [-1,1])
 
     def __getitem__(self, index):
         """Return a data point and its metadata information.
@@ -51,17 +53,19 @@ class VanillaUnalignedDataset(BaseDataset):
         """
         # Get the dataitems for 4 domains
         A_path = self.A_paths[index % self.A_size]  # make sure index is within then range
+        mask_A_path = self.mask_A_paths[index % self.A_size]
         if self.opt.serial_batches:   # make sure index is within then range
             index_B = index % self.B_size
         else:   # randomize the index
             index_B = random.randint(0, self.B_size - 1)
         B_path = self.B_paths[index_B]
+        mask_B_path = self.mask_B_paths[index_B]
         
-        A = self.normalize(A_path)
-        B = self.normalize(B_path)
+        A, mask_A = self.return_data(A_path, mask_A_path)
+        B, mask_B = self.return_data(B_path, mask_B_path)
     
         #Return a tuple of the kernel data instead of an indivodual kernel. (Needs to be implemented)
-        return {'A': A, 'B': B, 'A_paths': A_path, 'B_paths': B_path} 
+        return {'A': A, 'B': B, 'A_mask': mask_A, 'B_mask': mask_B, 'A_paths': A_path, 'B_paths': B_path}
 
     def __len__(self):
         """Return the total number of images in the dataset.
@@ -73,10 +77,11 @@ class VanillaUnalignedDataset(BaseDataset):
         # return max(self.subset_A, self.subset_B, self.subset_C, self.subset_D)
 
 
-    def normalize(self, input_slice_path):
-        """Normalize input slice and return as a tensor ranging from [-1,1]"""
-        nift_clip = np.clip(nib.load(input_slice_path).get_fdata()[:,:,0], -1024, 3072)
-        norm = self.normalizer(nift_clip)
-        tensor = torch.from_numpy(norm)
+    def return_data(self, input_slice_path, mask_slice_path):
+        nift_data = nib.load(input_slice_path).get_fdata()[:,:,0]
+        tensor = torch.from_numpy(nift_data)
         torch_tensor = tensor.unsqueeze(0).float()
-        return torch_tensor
+        mask_data = nib.load(mask_slice_path).get_fdata()[:,:,0]
+        mask_tensor = torch.from_numpy(mask_data)
+        mask_tensor = mask_tensor.unsqueeze(0).long()
+        return torch_tensor, mask_tensor
