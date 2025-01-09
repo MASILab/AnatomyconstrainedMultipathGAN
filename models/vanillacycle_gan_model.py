@@ -5,6 +5,7 @@ from .base_model import BaseModel
 from . import networks
 from torch.cuda.amp import autocast, GradScaler
 import numpy as np
+from tqdm import tqdm
 
 
 class VanillaCycleGANModel(BaseModel):
@@ -83,19 +84,25 @@ class VanillaCycleGANModel(BaseModel):
         # self.image_paths = input['A_paths' if AtoB else 'B_paths']
     
     def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask):
-        real_mean_A = 0.0
-        fake_mean_A = 0.0
-        real_mean_B = 0.0
-        fake_mean_B = 0.0
+        real_mean_A, fake_mean_A = 0.0, 0.0
+        real_mean_B, fake_mean_B = 0.0, 0.0
 
-        for label in torch.unique(real_mask):
-            if label == 0:
-                continue
-            real_mean_A += torch.mean(real_A[real_mask == label])
-            fake_mean_A += torch.mean(fake_A[real_mask == label])
-            real_mean_B += torch.mean(real_B[real_mask == label])
-            fake_mean_B += torch.mean(fake_B[real_mask == label])
+        unique_labels = torch.unique(real_mask)
+        unique_labels = unique_labels[unique_labels != 0] #Remove background label
 
+        for label in unique_labels:
+        # Create a binary mask for the current label
+            label_mask = (real_mask == label).float()
+
+        # Compute mean intensities for real and fake images
+            label_count = label_mask.sum()  # Number of pixels for this label
+            if label_count > 0:  # Avoid division by zero
+                real_mean_A += (real_A * label_mask).sum() / label_count
+                fake_mean_A += (fake_A * label_mask).sum() / label_count
+                real_mean_B += (real_B * label_mask).sum() / label_count
+                fake_mean_B += (fake_B * label_mask).sum() / label_count
+
+        # Compute L2 loss for the forward and backward cycle
         loss_seg_A = self.criterionSeg(real_mean_A, fake_mean_A) * self.opt.lambda_seg
         loss_seg_B = self.criterionSeg(real_mean_B, fake_mean_B) * self.opt.lambda_seg
 
@@ -109,9 +116,8 @@ class VanillaCycleGANModel(BaseModel):
             self.rec_B = self.netG_A(self.fake_A)   # G_A(G_B(B))
 
     def backward_D_basic(self, netD, real, fake):
-        with autocast():
-            pred_real = netD(real)
-            pred_fake = netD(fake.detach())
+        pred_real = netD(real)
+        pred_fake = netD(fake.detach())
         loss_D_real = self.criterionGAN(pred_real, True)
        
         loss_D_fake = self.criterionGAN(pred_fake, False)
