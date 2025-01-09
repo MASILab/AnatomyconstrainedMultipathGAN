@@ -1,0 +1,19 @@
+__pycache__/
+
+.vscode/
+
+data/__pycache__/
+
+options/__pycache__/
+
+util/__pycache__/
+
+
+# Data files
+*.nii.gz
+*.nii
+*.npy
+*.npz
+
+basic_experiments/*.nii.gz
+
