@@ -25,8 +25,8 @@ class VanillaUnalignedDataset(BaseDataset):
         #When training for four domains, use this code from lines 33-51
         self.dir_A = os.path.join(opt.dataroot, opt.phase + opt.source_kernel)  
         self.dir_B = os.path.join(opt.dataroot, opt.phase + opt.target_kernel)
-        self.mask_dirA = os.path.join(opt.dataroot, opt.phase + opt.source_kernel_mask)
-        self.mask_dirB = os.path.join(opt.dataroot, opt.phase + opt.target_kernel_mask)
+        self.mask_dirA = os.path.join(opt.dataroot, opt.source_kernel_mask)
+        self.mask_dirB = os.path.join(opt.dataroot, opt.target_kernel_mask)
         print(self.dir_A)
         print(self.dir_B)
         print(self.mask_dirA)

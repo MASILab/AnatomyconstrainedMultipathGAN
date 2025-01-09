@@ -88,7 +88,7 @@ class VanillaCycleGANModel(BaseModel):
         real_mean_B = 0.0
         fake_mean_B = 0.0
 
-        for label in np.unique(real_mask):
+        for label in torch.unique(real_mask):
             if label == 0:
                 continue
             real_mean_A += torch.mean(real_A[real_mask == label])
