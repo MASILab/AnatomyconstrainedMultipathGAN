@@ -841,3 +841,9 @@ class ResNetDecoder(nn.Module):
 
     def forward(self, x):
         return self.decoder(x)
+
+resnet_encoder = ResNetEncoder(1, ResBlocklatent(), 64, nn.InstanceNorm2d)
+resnet_decoder = ResNetDecoder(1, 64, nn.InstanceNorm2d)
+
+print(resnet_encoder)
+print(resnet_decoder)

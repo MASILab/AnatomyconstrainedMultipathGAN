@@ -82,7 +82,7 @@ class VanillaCycleGANModel(BaseModel):
         self.real_B_mask = input['B_mask'].to(self.device)
         # self.image_paths = input['A_paths' if AtoB else 'B_paths']
     
-    def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask, fake_mask):
+    def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask):
         real_mean_A = 0.0
         fake_mean_A = 0.0
         real_mean_B = 0.0
@@ -160,7 +160,7 @@ class VanillaCycleGANModel(BaseModel):
 
         #4 computations for the tissue statistic loss: mean of real A , MEan of Fake A, mean of real B, mean of fake B
         # L2 forward = ||mean(real_A) - mean(fake_A)||^2, L2 backward = ||mean(real_B) - mean(fake_B)||^2
-        self.loss_seg_A, self.loss_seg_B = self.tissue_statistic_loss(self.real_A, self.fake_A, self.real_B, self.fake_B, self.real_A_mask, self.fake_A_mask)
+        self.loss_seg_A, self.loss_seg_B = self.tissue_statistic_loss(self.real_A, self.fake_A, self.real_B, self.fake_B, self.real_A_mask)
 
         # combined loss and calculate gradients
         self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B + self.loss_seg_A + self.loss_seg_B
