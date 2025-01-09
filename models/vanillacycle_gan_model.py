@@ -4,6 +4,7 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 from torch.cuda.amp import autocast, GradScaler
+import numpy as np
 
 
 class VanillaCycleGANModel(BaseModel):
@@ -80,6 +81,25 @@ class VanillaCycleGANModel(BaseModel):
         self.real_A_mask = input['A_mask'].to(self.device)
         self.real_B_mask = input['B_mask'].to(self.device)
         # self.image_paths = input['A_paths' if AtoB else 'B_paths']
+    
+    def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask, fake_mask):
+        real_mean_A = 0.0
+        fake_mean_A = 0.0
+        real_mean_B = 0.0
+        fake_mean_B = 0.0
+
+        for label in np.unique(real_mask):
+            if label == 0:
+                continue
+            real_mean_A += torch.mean(real_A[real_mask == label])
+            fake_mean_A += torch.mean(fake_A[real_mask == label])
+            real_mean_B += torch.mean(real_B[real_mask == label])
+            fake_mean_B += torch.mean(fake_B[real_mask == label])
+
+        loss_seg_A = self.criterionSeg(real_mean_A, fake_mean_A) * self.opt.lambda_seg
+        loss_seg_B = self.criterionSeg(real_mean_B, fake_mean_B) * self.opt.lambda_seg
+
+        return loss_seg_A, loss_seg_B
 
     def forward(self):
         with autocast():
@@ -140,9 +160,10 @@ class VanillaCycleGANModel(BaseModel):
 
         #4 computations for the tissue statistic loss: mean of real A , MEan of Fake A, mean of real B, mean of fake B
         # L2 forward = ||mean(real_A) - mean(fake_A)||^2, L2 backward = ||mean(real_B) - mean(fake_B)||^2
-        
+        self.loss_seg_A, self.loss_seg_B = self.tissue_statistic_loss(self.real_A, self.fake_A, self.real_B, self.fake_B, self.real_A_mask, self.fake_A_mask)
+
         # combined loss and calculate gradients
-        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B
+        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B + self.loss_seg_A + self.loss_seg_B
         return self.loss_G
 
     def optimize_parameters(self):
@@ -156,10 +177,12 @@ class VanillaCycleGANModel(BaseModel):
         # self.optimizer_G.step()      
         self.scalar.scale(loss_G).backward()
         self.scalar.step(self.optimizer_G)
-        self.scalar.update()
 
         self.set_requires_grad([self.netD_A, self.netD_B], True)
         self.optimizer_D.zero_grad()  
-        self.backward_D_A()      
-        self.backward_D_B()      
-        self.optimizer_D.step()  
+        with autocast():
+            loss_D = self.backward_D()
+        # self.optimizer_D.step()
+        self.scalar.scale(loss_D).backward()
+        self.scalar.step(self.optimizer_D)
+        self.scalar.update()

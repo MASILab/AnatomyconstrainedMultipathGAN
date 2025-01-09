@@ -782,7 +782,6 @@ class ResNetEncoder(nn.Module):
         super(ResNetEncoder, self).__init__()
 
         # self.latent_layers = latent This is an unwanted initialization of the latent layers which was creating the latent blocks. The latent layers are already initialized in the ResBlocklatent class.
-        self.latent_layers = latent
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func == nn.InstanceNorm2d
         else:
@@ -842,37 +841,3 @@ class ResNetDecoder(nn.Module):
 
     def forward(self, x):
         return self.decoder(x)
-
-input1 = torch.randn(1,1,512,512)
-
-resnet = ResnetGenerator(1, 1, 64, n_blocks=9)
-resblocks = ResBlocklatent()
-encoder = ResNetEncoder(1, resblocks, 64)
-decoder = ResNetDecoder(1, 64)
-print(encoder(input1).shape)
-print(decoder)
-
-
-print(sum(p.numel() for p in resnet.parameters()))
-print(sum(p.numel() for p in encoder.parameters()))
-print(sum(p.numel() for p in decoder.parameters()))
-# latent = encoder(input1)
-# out = decoder(latent)
-# print(out.shape)
-
-
-# print(encoder)
-
-
-
-# weights = torch.load("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/starganL2weightsched_resnetbackbone/multipathGAN_withL2weightsched_resentbackbone_stage2/13_net_gendisc_weights.pth")
-# encoderdict = OrderedDict() 
-
-# for k, v in weights.items():
-#     encoderdict["module." + k] = v
-
-# shared_latent = ResBlocklatent(n_blocks=9, ngf=64, norm_layer=nn.InstanceNorm2d, padding_type='reflect')
-# resencode = G_encoder(input_nc=1, ngf=64, netG_encoder="resnet_encoder", norm = 'instance', init_type='normal', init_gain=0.02, latent_layer=shared_latent, gpu_ids=[0]) 
-
-# resencode.load_state_dict(encoderdict, strict=False)
-# print(resencode(input1).shape)
