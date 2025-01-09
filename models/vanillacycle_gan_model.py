@@ -89,11 +89,11 @@ class VanillaCycleGANModel(BaseModel):
             self.rec_B = self.netG_A(self.fake_A)   # G_A(G_B(B))
 
     def backward_D_basic(self, netD, real, fake):
-        # Real
-        pred_real = netD(real)
+        with autocast():
+            pred_real = netD(real)
+            pred_fake = netD(fake.detach())
         loss_D_real = self.criterionGAN(pred_real, True)
-        # Fake
-        pred_fake = netD(fake.detach())
+       
         loss_D_fake = self.criterionGAN(pred_fake, False)
         # Combined loss and calculate gradients
         loss_D = (loss_D_real + loss_D_fake) * 0.5
@@ -104,7 +104,7 @@ class VanillaCycleGANModel(BaseModel):
         fake_B = self.fake_B_pool.query(self.fake_B)
         self.loss_D_A = self.backward_D_basic(self.netD_A, self.real_B, fake_B)
 
-          """Calculate GAN loss for discriminator D_B"""
+        """Calculate GAN loss for discriminator D_B"""
         fake_A = self.fake_A_pool.query(self.fake_A)
         self.loss_D_B = self.backward_D_basic(self.netD_B, self.real_A, fake_A)
 
