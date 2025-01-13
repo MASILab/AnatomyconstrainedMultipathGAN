@@ -17,7 +17,7 @@ class VanillaCycleGANModel(BaseModel):
             parser.add_argument('--lambda_A', type=float, default=10.0, help='weight for cycle loss (A -> B -> A)')
             parser.add_argument('--lambda_B', type=float, default=10.0, help='weight for cycle loss (B -> A -> B)')
             parser.add_argument('--lambda_identity', type=float, default=0.0, help='use identity mapping. Setting lambda_identity other than 0 has an effect of scaling the weight of the identity mapping loss. For example, if the weight of the identity loss should be 10 times smaller than the weight of the reconstruction loss, please set lambda_identity = 0.1')
-            parser.add_argument('--lambda_seg', type=float, default=1.0, help='weight for tissue statistic loss')
+            parser.add_argument('--lambda_seg', type=float, default=0.01, help='weight for tissue statistic loss')
 
         return parser
 
@@ -83,28 +83,70 @@ class VanillaCycleGANModel(BaseModel):
         self.real_B_mask = input['B_mask'].to(self.device)
         # self.image_paths = input['A_paths' if AtoB else 'B_paths']
     
+    #  def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask_A, real_mask_B): #Computation is incorrect! 
+    #     ##Might have to weight the mean by the area of the structure
+    #     real_mean_A, fake_mean_A = 0.0, 0.0
+    #     real_mean_B, fake_mean_B = 0.0, 0.0
+
+    #     unique_labels_forward = torch.unique(real_mask_A)
+    #     unique_labels_forward = unique_labels_forward[unique_labels_forward != 0] #Remove background label
+    #     unique_labels_backward = torch.unique(real_mask_B)
+    #     unique_labels_backward = unique_labels_backward[unique_labels_backward != 0] #Remove background label
+        
+    #     for label in unique_labels_forward:
+    #          label_mask = (real_mask_A == label).float()
+    #          label_count = torch.sum(label_mask)
+
+    #          real_mean_A += torch.sum(real_A * label_mask) / label_count
+    #           fake_mean_B += torch.sum(fake_B * label_mask) / label_count
+             
+
+    #     for label in unique_labels_backward:
+    #          label_mask = (real_mask_B == label).float()
+    #          label_count = torch.sum(label_mask)
+    #          real_mean_B += torch.sum(real_B * label_mask) / label_count
+    #           fake_mean_A += torch.sum(fake_A * label_mask) / label_count
+             
+        
+    #      # Compute L2 loss for the forward and backward cycle
+    #     loss_seg_A = self.criterionSeg(real_mean_A, fake_mean_B) * self.opt.lambda_seg
+    #     loss_seg_B = self.criterionSeg(real_mean_B, fake_mean_A) * self.opt.lambda_seg
+
+    #     return loss_seg_A, loss_seg_B
+
     def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask_A, real_mask_B):
-        real_mean_A, fake_mean_A = 0.0, 0.0
-        real_mean_B, fake_mean_B = 0.0, 0.0
+        loss_stat_A, loss_stat_B = 0.0, 0.0
 
         unique_labels_forward = torch.unique(real_mask_A)
-        unique_labels_forward = unique_labels_forward[unique_labels_forward != 0] #Remove background label
+        unique_labels_forward = unique_labels_forward[unique_labels_forward != 0] 
         unique_labels_backward = torch.unique(real_mask_B)
-        unique_labels_backward = unique_labels_backward[unique_labels_backward != 0] #Remove background label
-        
+        unique_labels_backward = unique_labels_backward[unique_labels_backward != 0]
+
         for label in unique_labels_forward:
-            real_mean_A += torch.mean(real_A[real_mask_A == label])
-            fake_mean_A += torch.mean(fake_A[real_mask_A == label])
+            label_mask = (real_mask_A == label) #Binary label mask
+            #count pixels for the label
+            label_count = torch.sum(label_mask)
+            label_count_all = torch.sum(real_mask_A)
+            weight_forward = label_count / label_count_all #Weight for the structure to see how much it contributes to the mean
 
+            real_mean_A = real_A[label_mask].mean() #real A
+            fake_mean_B = fake_B[label_mask].mean() #fake B
+
+            loss_stat_A += weight_forward * self.criterionSeg(real_mean_A, fake_mean_B)
+        
         for label in unique_labels_backward:
-            real_mean_B += torch.mean(real_B[real_mask_B == label])
-            fake_mean_B += torch.mean(fake_B[real_mask_B == label])
-    
-        # Compute L2 loss for the forward and backward cycle
-        loss_seg_A = self.criterionSeg(real_mean_A, fake_mean_A) * self.opt.lambda_seg
-        loss_seg_B = self.criterionSeg(real_mean_B, fake_mean_B) * self.opt.lambda_seg
+            label_mask = (real_mask_B == label)
+            label_count = torch.sum(label_mask)
+            label_count_all = torch.sum(real_mask_B)
+            weight_backward = label_count / label_count_all
 
-        return loss_seg_A, loss_seg_B
+            real_mean_B = real_B[label_mask].mean() #real B
+            fake_mean_A = fake_A[label_mask].mean() #fake A
+
+            loss_stat_B += weight_backward * self.criterionSeg(real_mean_B, fake_mean_A)
+
+        return loss_stat_A, loss_stat_B
+
 
     def forward(self):
         with autocast():
@@ -167,7 +209,7 @@ class VanillaCycleGANModel(BaseModel):
         self.loss_seg_A, self.loss_seg_B = self.tissue_statistic_loss(self.real_A, self.fake_A, self.real_B, self.fake_B, self.real_A_mask, self.real_B_mask)
 
         # combined loss and calculate gradients
-        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B + self.loss_seg_A + self.loss_seg_B
+        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B + (lambda_seg * self.loss_seg_A) + (lambda_seg * self.loss_seg_B)
         return self.loss_G
 
     def optimize_parameters(self):
