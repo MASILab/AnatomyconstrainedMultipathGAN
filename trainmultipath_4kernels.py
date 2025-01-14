@@ -1,5 +1,3 @@
-#Script to train 4 domain multipath model
-
 import time
 from options.train_options import TrainOptions
 from data import create_dataset
@@ -38,16 +36,17 @@ if __name__ == '__main__':
     total_iters = 0                # the total number of training iterations
 
     #Track losses with wandb
-    # wandb.init(
-    #     project="MultipathcycleGAN_4kernels",
-    #     config= {
-    #         "batch_size": opt.batch_size,
-    #         "lambda_L2": opt.lambda_L2,
-    #         "lr": opt.lr,
-    #         "n_epochs": opt.n_epochs,
-    #         "n_epochs_decay": opt.n_epochs_decay
-    #     }
-    # )
+    wandb.init(
+        project="MultipathCycleGAN_with_Anatomycontext_4domains",
+        config= {
+            "batch_size": opt.batch_size,
+            "lambda_L2": opt.lambda_L2,
+            "lambda_seg": opt.lambda_seg,
+            "lr": opt.lr,
+            "n_epochs": opt.n_epochs,
+            "n_epochs_decay": opt.n_epochs_decay
+        }
+    )
 
     for epoch in tqdm(range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1)):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
 
@@ -89,7 +88,7 @@ if __name__ == '__main__':
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
-                # wandb.log({k: v for k, v in losses.items()}) #Log losses onto weights and biases
+                wandb.log({k: v for k, v in losses.items()}) #Log losses onto weights and biases
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
                 if opt.display_id > 0:
@@ -108,6 +107,6 @@ if __name__ == '__main__':
 
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
     
-# wandb.finish()
+    wandb.finish()
 
         
