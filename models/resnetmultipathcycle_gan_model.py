@@ -31,7 +31,7 @@ class ResnetMultipathCycleGANModel(BaseModel):
             parser.add_argument('--lambda_B', type=float, default=10.0, help='weight for cycle loss (B -> A -> B)') #Backward lambda
             # parser.add_argument('--lambda_identity', type=float, default=0.5, help='use identity mapping. Setting lambda_identity other than 0 has an effect of scaling the weight of the identity mapping loss. For example, if the weight of the identity loss should be 10 times smaller than the weight of the reconstruction loss, please set lambda_identity = 0.1')
             parser.add_argument('--lambda_L2', type = float, default=10e6, help='Weight for L2 function between generated outout and input for a given path. Will begin decaying once the images are forced to identity.')
-            parser.add_argument('--lambda_seg', type=float, default=10.0, help='weight for tissue statistic loss')
+            parser.add_argument('--lambda_seg', type=float, default=0.01, help='weight for tissue statistic loss')
 
         return parser
 
