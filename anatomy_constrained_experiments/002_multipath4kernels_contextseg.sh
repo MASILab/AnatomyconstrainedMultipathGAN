@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python trainmultipath_4kernels.py --dataroot /home-local/krishar1/AnatomyconstrainedMultipathGAN/training_data --name MultipathGAN_with_context_anatomy --model resnetmultipathcycle_gan --input_nc 1 --output_nc 1 --dataset_mode unaligned --batch_size 2 --load_size 512 --crop_size 512 --n_epochs 100 --n_epochs_decay 100 --gpu_ids 1,2 --display_id 0 --no_flip --num_threads 40 --norm instance --netG_encoder resnet_encoder --netG_decoder resnet_decoder
