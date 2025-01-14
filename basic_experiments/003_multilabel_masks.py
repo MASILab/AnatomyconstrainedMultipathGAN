@@ -25,7 +25,9 @@ masks = ["lung_lower_lobe_left.nii.gz", "lung_lower_lobe_right.nii.gz", "lung_up
          "rib_left_11.nii.gz", "rib_left_12.nii.gz", "rib_right_1.nii.gz", "rib_right_2.nii.gz", "rib_right_3.nii.gz", "rib_right_4.nii.gz", "rib_right_5.nii.gz",
          "rib_right_6.nii.gz", "rib_right_7.nii.gz", "rib_right_8.nii.gz", "rib_right_9.nii.gz", "rib_right_10.nii.gz", "rib_right_11.nii.gz", "rib_right_12.nii.gz", "spleen.nii.gz", 
          "costal_cartilages.nii.gz", "adrenal_gland_left.nii.gz", "adrenal_gland_right.nii.gz", "colon.nii.gz", "clavicula_left.nii.gz", "clavicula_right.nii.gz", "duodenum.nii.gz", 
-         "gallbladder.nii.gz", "portal_vein_and_splenic_vein.nii.gz", "scapula_left.nii.gz", "scapula_right.nii.gz", "sternum.nii.gz"]
+         "gallbladder.nii.gz", "portal_vein_and_splenic_vein.nii.gz", "scapula_left.nii.gz", "scapula_right.nii.gz", "sternum.nii.gz", "brachiocephalic_trunk.nii.gz", "brachiocephalic_vein_left.nii.gz",
+         "brachiocephalic_vein_right.nii.gz", "vertebrae_T1.nii.gz", "vertebrae_T2.nii.gz", "vertebrae_T3.nii.gz", "vertebrae_T4.nii.gz", "vertebrae_T5.nii.gz", "vertebrae_T6.nii.gz",
+         "vertebrae_T7.nii.gz", "vertebrae_T8.nii.gz", "vertebrae_T9.nii.gz", "vertebrae_T10.nii.gz", "vertebrae_T11.nii.gz", "vertebrae_T12.nii.gz"]
 
 def process_folder(path, folder):
     for files in os.listdir(os.path.join(path, folder)):
@@ -49,6 +51,7 @@ def process_folder(path, folder):
         adrenal_gland_masks = [masks[47], masks[48]]
         clavicle_masks = [masks[50], masks[51]]
         scapula_masks = [masks[55], masks[56]]
+        brachioc_vein_masks = [masks[59], masks[60]]
 
         # Load and process each mask one by one
         for mask in masks:
@@ -107,6 +110,8 @@ def process_folder(path, folder):
                     multilabel_mask[mask_data == 1] = 25
                 elif mask == masks[57]: #Sternum
                     multilabel_mask[mask_data == 1] = 26
+                elif mask in brachioc_vein_masks:
+                    multilabel_mask[mask_data == 1] = 27
                 del mask_data
                 gc.collect()
 
