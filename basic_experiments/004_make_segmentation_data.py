@@ -12,15 +12,22 @@ import nibabel as nib
 #          "/fs5/p_masi/krishar1/MIDL/STANDARD_BONE/soft"]
 
 paths = ["/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard_masked", 
-"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked"]
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked", 
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/hard_masked",
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/soft_masked",
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/hard",
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/soft",
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/hard",
+"/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/soft"]
 
 c3d_path = "/home/local/VANDERBILT/krishar1/c3d-1.0.0-Linux-x86_64/bin/c3d"
 
 # Look in every folder of the pid. Should be pid_multilabel.nii.gz. split using c3d command. 
 
-for path in os.listdir(paths[1]):
-    image_path = os.path.join(paths[1], path, "segmentations", path + "_multilabel.nii.gz")
-    out_dir = os.path.join("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f", "soft_slices")
+for path in os.listdir(paths[7]):
+    image_path = os.path.join(paths[7], path, "segmentations", path + "_multilabel_all.nii.gz")
+    out_dir = os.path.join("/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE", "soft_slices_all_labels")
+    os.makedirs(out_dir, exist_ok=True)
     out_file = os.path.join(out_dir, f'{path}_%03d.nii.gz')
     c3d_command = f'{c3d_path} {image_path} -slice z 0%:100% -oo {out_file}'
     print(c3d_command)
