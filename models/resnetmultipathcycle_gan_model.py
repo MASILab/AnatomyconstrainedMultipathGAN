@@ -174,23 +174,35 @@ class ResnetMultipathCycleGANModel(BaseModel):
         self.STDpath = input['D_paths']
         # self.image_paths = input['A_paths' if AtoB else 'B_paths']
     
-    def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask):
+    def tissue_statistic_loss(self, real_A, fake_A, real_B, fake_B, real_mask_A, real_mask_B):
         real_mean_A = 0.0
         fake_mean_A = 0.0
         real_mean_B = 0.0
         fake_mean_B = 0.0
-        lambda_seg = self.opt.lambda_seg
 
-        for label in np.unique(real_mask):
-            if label == 0:
-                continue
-            real_mean_A += torch.mean(real_A[real_mask == label])
-            fake_mean_A += torch.mean(fake_A[real_mask == label])
-            real_mean_B += torch.mean(real_B[real_mask == label])
-            fake_mean_B += torch.mean(fake_B[real_mask == label])
+        unique_labels_forward = torch.unique(real_mask_A)
+        unique_labels_forward = unique_labels_forward[unique_labels_forward != 0]
+        unique_labels_backward = torch.unique(real_mask_B)
+        unique_labels_backward = unique_labels_backward[unique_labels_backward != 0]
 
-        loss_seg_A = self.criterionSeg(real_mean_A, fake_mean_A) * lambda_seg
-        loss_seg_B = self.criterionSeg(real_mean_B, fake_mean_B) * lambda_seg
+        for label in unique_labels_forward:
+            label_mask = (real_mask_A == label)
+            label_count = torch.sum(label_mask)
+
+            if label_count > 5:
+                real_mean_A += torch.mean(real_A[label_mask])
+                fake_mean_B += torch.mean(fake_B[label_mask])
+        
+        for label in unique_labels_backward:
+            label_mask = (real_mask_B == label)
+            label_count = torch.sum(label_mask)
+
+            if label_count > 5:
+                real_mean_B += torch.mean(real_B[label_mask])
+                fake_mean_A += torch.mean(fake_A[label_mask])
+        
+        loss_seg_A = self.criterionSeg(real_mean_A, fake_mean_B) * self.opt.lambda_seg
+        loss_seg_B = self.criterionSeg(real_mean_B, fake_mean_A) * self.opt.lambda_seg
 
         return loss_seg_A, loss_seg_B
 
