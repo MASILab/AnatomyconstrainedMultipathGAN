@@ -276,7 +276,6 @@ class ResnetMultipathCycleGANModel(BaseModel):
         loss_D_fake = self.criterionGAN(pred_fake, False)
         # Combined loss and calculate gradients
         loss_D = (loss_D_real + loss_D_fake) * 0.5
-        loss_D.backward()
         return loss_D
     
     # Mulitpath cycleGAN
@@ -395,13 +394,13 @@ class ResnetMultipathCycleGANModel(BaseModel):
         self.loss_L2GSGH = self.L2loss_decay(self.STD, self.fake_CD) * lambda_L2
         
         #Tissue statistic loss
-        self.loss_segSHSS, self.loss_segSSSH = self.tissue_statistic_loss(self.B50f, self.fake_BA, self.B30f, self.fake_AB, self.B50f_mask, self.B30f_mask)
-        self.loss_segSHGH, self.loss_segGHSH = self.tissue_statistic_loss(self.B50f, self.fake_CA, self.BONE, self.fake_AC, self.B50f_mask, self.BONE_mask)
-        self.loss_segSHGS, self.loss_segGSSH = self.tissue_statistic_loss(self.B50f, self.fake_DA, self.STD, self.fake_AD, self.B50f_mask, self.STD_mask)
-        self.loss_segSSGH, self.loss_segGHSS = self.tissue_statistic_loss(self.B30f, self.fake_CB, self.BONE, self.fake_BC, self.B30f_mask, self.BONE_mask)
-        self.loss_segSSGS, self.loss_segGSSS = self.tissue_statistic_loss(self.B30f, self.fake_DB, self.STD, self.fake_BD, self.B30f_mask, self.STD_mask)
+        self.loss_segSHSS, self.loss_segSSSH = self.tissue_statistic_loss(self.B50f, self.fake_AB, self.B30f, self.fake_BA, self.B50f_mask, self.B30f_mask)
+        self.loss_segSHGH, self.loss_segGHSH = self.tissue_statistic_loss(self.B50f, self.fake_AC, self.BONE, self.fake_CA, self.B50f_mask, self.BONE_mask)
+        self.loss_segSHGS, self.loss_segGSSH = self.tissue_statistic_loss(self.B50f, self.fake_AD, self.STD, self.fake_DA, self.B50f_mask, self.STD_mask)
+        self.loss_segSSGH, self.loss_segGHSS = self.tissue_statistic_loss(self.B30f, self.fake_BC, self.BONE, self.fake_CB, self.B30f_mask, self.BONE_mask)
+        self.loss_segSSGS, self.loss_segGSSS = self.tissue_statistic_loss(self.B30f, self.fake_BD, self.STD, self.fake_DB, self.B30f_mask, self.STD_mask)
         self.loss_segGHGS, self.loss_segGSGH = self.tissue_statistic_loss(self.BONE, self.fake_DC, self.STD, self.fake_CD, self.BONE_mask, self.STD_mask)
-        
+
 
         #this is loss function for multipath cycleGAN: Adversarial losses + desicriminator losses + L2 losses
         self.loss_G = self.loss_G_AB + self.loss_G_BA + self.loss_cycle_AB + self.loss_cycle_BA + \
