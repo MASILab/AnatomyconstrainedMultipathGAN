@@ -15,7 +15,10 @@ import gc
 #          "/fs5/p_masi/krishar1/MIDL/STANDARD_BONE/soft"]
 
 
-paths = ["/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard_masked", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked"]
+paths = ["/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/hard_masked", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/B30f_B50f/soft_masked", 
+         "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/hard_masked", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/C_D/soft_masked",
+         "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/hard", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_LUNG/soft",
+         "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/hard", "/media/krishar1/Elements1/AnatomyConstrainedMultipathGAN/STANDARD_BONE/soft"]
 
 masks = ["lung_lower_lobe_left.nii.gz", "lung_lower_lobe_right.nii.gz", "lung_upper_lobe_left.nii.gz", "lung_upper_lobe_right.nii.gz", "lung_middle_lobe_right.nii.gz",
          "skeletal_muscle.nii.gz", "subcutaneous_fat.nii.gz", "trachea.nii.gz", "liver.nii.gz", "heart.nii.gz", "aorta.nii.gz", "kidney_left.nii.gz", "kidney_right.nii.gz",
@@ -110,8 +113,34 @@ def process_folder(path, folder):
                     multilabel_mask[mask_data == 1] = 25
                 elif mask == masks[57]: #Sternum
                     multilabel_mask[mask_data == 1] = 26
-                elif mask in brachioc_vein_masks:
+                elif mask == masks[58]: #Brachiocephalic trunk
                     multilabel_mask[mask_data == 1] = 27
+                elif mask in brachioc_vein_masks:
+                    multilabel_mask[mask_data == 1] = 28
+                elif mask == masks[61]: #Vertebrae T1
+                    multilabel_mask[mask_data == 1] = 29
+                elif mask == masks[62]: #Vertebrae T2
+                    multilabel_mask[mask_data == 1] = 30
+                elif mask == masks[63]: #Vertebrae T3
+                    multilabel_mask[mask_data == 1] = 31
+                elif mask == masks[64]: #Vertebrae T4
+                    multilabel_mask[mask_data == 1] = 32
+                elif mask == masks[65]: #Vertebrae T5
+                    multilabel_mask[mask_data == 1] = 33
+                elif mask == masks[66]: #Vertebrae T6
+                    multilabel_mask[mask_data == 1] = 34
+                elif mask == masks[67]: #Vertebrae T7
+                    multilabel_mask[mask_data == 1] = 35
+                elif mask == masks[68]: #Vertebrae T8
+                    multilabel_mask[mask_data == 1] = 36
+                elif mask == masks[69]: #Vertebrae T9
+                    multilabel_mask[mask_data == 1] = 37
+                elif mask == masks[70]: #Vertebrae T10
+                    multilabel_mask[mask_data == 1] = 38
+                elif mask == masks[71]: #Vertebrae T11
+                    multilabel_mask[mask_data == 1] = 39
+                elif mask == masks[72]: #Vertebrae T12
+                    multilabel_mask[mask_data == 1] = 40
                 del mask_data
                 gc.collect()
 
