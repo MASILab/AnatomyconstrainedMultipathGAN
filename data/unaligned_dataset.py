@@ -63,6 +63,7 @@ class UnalignedDataset(BaseDataset):
         Parameters:
             index (int)      -- a random integer for data indexing
 
+            
         Returns a dictionary that contains A, B, A_paths and B_paths
             A (tensor)       -- an image in the input domain
             B (tensor)       -- its corresponding image in the target domain
@@ -70,8 +71,11 @@ class UnalignedDataset(BaseDataset):
             B_paths (str)    -- image paths
         """
         # Get the dataitems for 4 domains
-        A_path = self.A_paths[index % self.A_size]  # make sure index is within then range
-        A_mask_path = self.mask_A_paths[index % self.A_size]
+        index_A = random.randint(0, self.A_size - 1)
+        # A_path = self.A_paths[index % self.A_size]
+        # A_mask_path = self.mask_A_paths[index % self.A_size]
+        A_path = self.A_paths[index_A]
+        A_mask_path = self.mask_A_paths[index_A]
         if self.opt.serial_batches:   # make sure index is within then range
             index_B = index % self.B_size
             index_C = index % self.C_size
@@ -106,8 +110,8 @@ class UnalignedDataset(BaseDataset):
         As we have different datasets with potentially different number of images,
         we take a maximum of all the datasets.
         """
-        return max(self.A_size, self.B_size, self.C_size, self.D_size)
-        # return max(self.subset_A, self.subset_B, self.subset_C, self.subset_D)
+        # return max(self.A_size, self.B_size, self.C_size, self.D_size)
+        return max(self.subset_A, self.subset_B, self.subset_C, self.subset_D)
 
 
     def normalize(self, input_slice_path, input_mask_path):

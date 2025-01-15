@@ -13,7 +13,6 @@ from torch.utils.data import DataLoader, Dataset, SubsetRandomSampler
 import wandb
 
 
-
 def seed_everything(seed=123):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -106,7 +105,4 @@ if __name__ == '__main__':
             model.save_networks(epoch)
 
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
-    
-    wandb.finish()
-
         

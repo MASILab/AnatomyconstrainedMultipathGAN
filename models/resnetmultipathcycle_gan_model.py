@@ -399,7 +399,7 @@ class ResnetMultipathCycleGANModel(BaseModel):
         self.loss_segSHGS, self.loss_segGSSH = self.tissue_statistic_loss(self.B50f, self.fake_AD, self.STD, self.fake_DA, self.B50f_mask, self.STD_mask)
         self.loss_segSSGH, self.loss_segGHSS = self.tissue_statistic_loss(self.B30f, self.fake_BC, self.BONE, self.fake_CB, self.B30f_mask, self.BONE_mask)
         self.loss_segSSGS, self.loss_segGSSS = self.tissue_statistic_loss(self.B30f, self.fake_BD, self.STD, self.fake_DB, self.B30f_mask, self.STD_mask)
-        self.loss_segGHGS, self.loss_segGSGH = self.tissue_statistic_loss(self.BONE, self.fake_DC, self.STD, self.fake_CD, self.BONE_mask, self.STD_mask)
+        self.loss_segGHGS, self.loss_segGSGH = self.tissue_statistic_loss(self.BONE, self.fake_CD, self.STD, self.fake_DC, self.BONE_mask, self.STD_mask)
 
 
         #this is loss function for multipath cycleGAN: Adversarial losses + desicriminator losses + L2 losses
