@@ -90,6 +90,8 @@ class UnalignedMultipathDataset(BaseDataset):
 
 
     def normalize(self, input_slice_path):
-        nift_data = nib.load(input_slice_path).get_fdata()[:,:,0]
-        torch_tensor = torch.from_numpy(nift_data).unsqueeze(0).float()
+        nift_clip = np.clip(nib.load(input_slice_path).get_fdata()[:,:,0], -1024, 3072)
+        norm = self.normalizer(nift_clip)
+        tensor = torch.from_numpy(norm)
+        torch_tensor = tensor.unsqueeze(0).float()
         return torch_tensor
