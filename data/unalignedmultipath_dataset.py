@@ -77,7 +77,7 @@ class UnalignedMultipathDataset(BaseDataset):
 
         #Return a tuple of the kernel data instead of an indivodual kernel. (Needs to be implemented)
         return {'A': A, 'B': B, 'C': C, 'D': D, 
-                'A_paths': A_path, 'B_paths': B_path, 'C_paths': C_path, 'D_paths': D_path, } 
+                'A_paths': A_path, 'B_paths': B_path, 'C_paths': C_path, 'D_paths': D_path} 
 
     def __len__(self):
         """Return the total number of images in the dataset.

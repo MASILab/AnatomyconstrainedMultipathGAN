@@ -60,6 +60,8 @@ class VanillaUnalignedDataset(BaseDataset):
             index_B = random.randint(0, self.B_size - 1)
         B_path = self.B_paths[index_B]
         mask_B_path = self.mask_B_paths[index_B]
+
+        
         
         A, mask_A = self.return_data(A_path, mask_A_path)
         B, mask_B = self.return_data(B_path, mask_B_path)
@@ -83,5 +85,5 @@ class VanillaUnalignedDataset(BaseDataset):
         torch_tensor = tensor.unsqueeze(0).float()
         mask_data = nib.load(mask_slice_path).get_fdata()[:,:,0]
         mask_tensor = torch.from_numpy(mask_data)
-        mask_tensor = mask_tensor.unsqueeze(0).long()
+        mask_tensor = mask_tensor.unsqueeze(0).float()
         return torch_tensor, mask_tensor
