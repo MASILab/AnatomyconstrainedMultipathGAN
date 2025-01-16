@@ -6,6 +6,7 @@ import numpy as np
 import nibabel as nib 
 import torch
 from torch.utils.data import DataLoader, Dataset
+from scipy.interpolate import interp1d
  
  #Need to confirm if massk has to be float or int. 
 class UnalignedMultipathDataset(BaseDataset):
@@ -44,6 +45,8 @@ class UnalignedMultipathDataset(BaseDataset):
         self.subset_B = int(0.2 * self.B_size)
         self.subset_C = int(0.2 * self.C_size)
         self.subset_D = int(0.2 * self.D_size)
+
+        self.normalizer = interp1d([-1024, 3072], [-1,1])
 
     def __getitem__(self, index):
         """Return a data point and its metadata information.

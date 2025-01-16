@@ -6,6 +6,7 @@ import numpy as np
 import nibabel as nib 
 import torch
 from torch.utils.data import DataLoader, Dataset
+from scipy.interpolate import interp1d
  
  #Need to confirm if massk has to be float or int. 
 class UnalignedDataset(BaseDataset):
@@ -57,18 +58,10 @@ class UnalignedDataset(BaseDataset):
         self.subset_C = int(0.2 * self.C_size)
         self.subset_D = int(0.2 * self.D_size)
 
+        self.normalizer = interp1d([-1024, 3072], [-1,1])
+
     def __getitem__(self, index):
         """Return a data point and its metadata information.
-
-        Parameters:
-            index (int)      -- a random integer for data indexing
-
-            
-        Returns a dictionary that contains A, B, A_paths and B_paths
-            A (tensor)       -- an image in the input domain
-            B (tensor)       -- its corresponding image in the target domain
-            A_paths (str)    -- image paths
-            B_paths (str)    -- image paths
         """
         # Get the dataitems for 4 domains
         index_A = random.randint(0, self.A_size - 1)
@@ -115,8 +108,10 @@ class UnalignedDataset(BaseDataset):
 
 
     def normalize(self, input_slice_path, input_mask_path):
-        nift_data = nib.load(input_slice_path).get_fdata()[:,:,0]
-        torch_tensor = torch.from_numpy(nift_data).unsqueeze(0).float()
+        nift_clip = np.clip(nib.load(input_slice_path).get_fdata()[:,:,0], -1024, 3072)
+        norm = self.normalizer(nift_clip)
+        tensor = torch.from_numpy(norm)
+        torch_tensor = tensor.unsqueeze(0).float()
         nift_mask = nib.load(input_mask_path).get_fdata()[:,:,0]
         mask = torch.from_numpy(nift_mask)
         mask_tensor = mask.unsqueeze(0).float()
