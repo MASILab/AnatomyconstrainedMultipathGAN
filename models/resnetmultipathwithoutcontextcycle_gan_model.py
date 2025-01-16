@@ -127,7 +127,6 @@ class ResnetMultipathWithoutContextCycleGANModel(BaseModel):
             self.criterionCycle = torch.nn.L1Loss() #cycle loss
             self.criterionIdt = torch.nn.L1Loss() #Identity loss
             self.L2 = torch.nn.MSELoss() # additional L2 loss between generated output and input for a given path
-            self.criterionSeg = torch.nn.MSELoss()
             self.optimizer_G = torch.optim.Adam(itertools.chain(self.netG_SH_encoder.parameters(),
                                                                 self.netG_SS_decoder.parameters(),
                                                                 self.netG_SS_encoder.parameters(),
@@ -372,18 +371,19 @@ class ResnetMultipathWithoutContextCycleGANModel(BaseModel):
     def optimize_parameters(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # forward
-        self.forward()      # compute fake images and reconstruction images.
-        self.set_requires_grad([self.netD_A, self.netD_B, self.netD_C, self.netD_D], False) #Multipath 
-        self.optimizer_G.zero_grad()  # set G gradients to zero
+        self.forward()    
+
+        self.set_requires_grad([self.netD_A, self.netD_B, self.netD_C, self.netD_D], False)  
+        self.optimizer_G.zero_grad()  
         with autocast():
-            loss_G = self.backward_G()          # calculate gradients for all G's
+            loss_G = self.backward_G()          
         self.scalar.scale(loss_G).backward() 
         self.scalar.step(self.optimizer_G)
-     # update weights for the encoders and decoders
-        self.set_requires_grad([self.netD_A, self.netD_B, self.netD_C, self.netD_D], True) #Multipath
-        self.optimizer_D.zero_grad()   # set D_A and D_B's gradients to zero
+
+        self.set_requires_grad([self.netD_A, self.netD_B, self.netD_C, self.netD_D], True) 
+        self.optimizer_D.zero_grad()   
         with autocast():
-            loss_D = self.backward_D()      # calculate gradients for D_A
+            loss_D = self.backward_D()     
         self.scalar.scale(loss_D).backward()
         self.scalar.step(self.optimizer_D)
         self.scalar.update()

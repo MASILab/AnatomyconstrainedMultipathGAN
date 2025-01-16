@@ -267,9 +267,8 @@ class ResnetMultipathCycleGANModel(BaseModel):
         We also call loss_D.backward() to calculate the gradients.
         """
         # Real
-        with autocast():
-            pred_real = netD(real)
-            pred_fake = netD(fake.detach())
+        pred_real = netD(real)
+        pred_fake = netD(fake.detach())
         loss_D_real = self.criterionGAN(pred_real, True)
         # Fake
        

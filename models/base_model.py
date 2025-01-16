@@ -260,7 +260,6 @@ class BaseModel(ABC):
         self.optimizer_D.load_state_dict(optimizer_state_dicts['D_optimizer'])
 
 
-
     def load_partial_networks(self, epoch):
         """
         Loading pretrained networks from stage 1 to train new paths in stage 2
