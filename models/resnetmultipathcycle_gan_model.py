@@ -425,6 +425,7 @@ class ResnetMultipathCycleGANModel(BaseModel):
             loss_G = self.backward_G()          # calculate gradients for all G's
         self.scalar.scale(loss_G).backward() 
         self.scalar.step(self.optimizer_G)
+        self.scalar.update()
      # update weights for the encoders and decoders
         self.set_requires_grad([self.netD_A, self.netD_B, self.netD_C, self.netD_D], True) #Multipath
         self.optimizer_D.zero_grad()   # set D_A and D_B's gradients to zero
