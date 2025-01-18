@@ -46,11 +46,21 @@ real_labels_backward = real_labels_backward[real_labels_backward != 0]
 mean_real_A = torch.zeros(len(real_labels_forward))
 mean_real_B = torch.zeros(len(real_labels_backward)) 
 
-#Iterate through the unique labels in the mask and compute a mean for each label. store the mean in the list
+#Approach1: Creating binary masks for each label and computing the mean of the image intensities for each label
 for i, label in enumerate(real_labels_forward):
     bin_mask = (hard_kernel_mask == label).float()
     mean_real_A[i] = torch.mean(hard_kernel_image[bin_mask == 1])
     mean_real_B[i] = torch.mean(soft_kernel_image[bin_mask == 1])
+
+print(mean_real_A)
+print(mean_real_B)
+loss = mse(mean_real_A, mean_real_B)
+print(loss)
+
+#Approach 2: Not using the binary mask approach
+for i, label in enumerate(real_labels_forward):
+    mean_real_A[i] = torch.mean(hard_kernel_image[hard_kernel_mask == label])
+    mean_real_B[i] = torch.mean(soft_kernel_image[hard_kernel_mask == label])
 
 print(mean_real_A)
 print(mean_real_B)
