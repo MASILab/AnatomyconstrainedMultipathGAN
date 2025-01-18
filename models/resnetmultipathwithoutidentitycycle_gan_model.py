@@ -10,7 +10,7 @@ from torch.cuda.amp import autocast, GradScaler
 import numpy as np
 
 
-class ResnetMultipathCycleGANModel(BaseModel):
+class ResnetMultipathWithoutIdentityCycleGANModel(BaseModel):
     """
     Utilizes 4 generators and 4 discriminators to perform the cycleGAN task.
     """
@@ -30,7 +30,7 @@ class ResnetMultipathCycleGANModel(BaseModel):
             parser.add_argument('--lambda_A', type=float, default=10.0, help='weight for cycle loss (A -> B -> A)') #Forward lambda
             parser.add_argument('--lambda_B', type=float, default=10.0, help='weight for cycle loss (B -> A -> B)') #Backward lambda
             # parser.add_argument('--lambda_identity', type=float, default=0.5, help='use identity mapping. Setting lambda_identity other than 0 has an effect of scaling the weight of the identity mapping loss. For example, if the weight of the identity loss should be 10 times smaller than the weight of the reconstruction loss, please set lambda_identity = 0.1')
-            parser.add_argument('--lambda_L2', type = float, default=10e6, help='Weight for L2 function between generated outout and input for a given path. Will begin decaying once the images are forced to identity.')
+            # parser.add_argument('--lambda_L2', type = float, default=10e6, help='Weight for L2 function between generated outout and input for a given path. Will begin decaying once the images are forced to identity.')
             parser.add_argument('--lambda_seg', type=float, default=0.01, help='weight for tissue statistic loss')
 
         return parser
@@ -215,11 +215,11 @@ class ResnetMultipathCycleGANModel(BaseModel):
         reconstructed = source_decoder(latent_rec)
         return fake_image, reconstructed
     
-    def L2loss_decay(self, real_image, fake_image):
-        interp_real = F.interpolate(real_image, size = [256,256], mode = 'bilinear', align_corners=True)
-        interp_fake = F.interpolate(fake_image, size = [256,256], mode = 'bilinear', align_corners=True)
-        L2loss = self.L2(interp_real, interp_fake)
-        return L2loss
+    # def L2loss_decay(self, real_image, fake_image):
+    #     interp_real = F.interpolate(real_image, size = [256,256], mode = 'bilinear', align_corners=True)
+    #     interp_fake = F.interpolate(fake_image, size = [256,256], mode = 'bilinear', align_corners=True)
+    #     L2loss = self.L2(interp_real, interp_fake)
+    #     return L2loss
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
@@ -379,18 +379,18 @@ class ResnetMultipathCycleGANModel(BaseModel):
         self.loss_cycle_DC = self.criterionCycle(self.rec_DC, self.STD) * lambda_B
 
         #Additional L2 loss for the objective function: Downsample real and fake tensors, compute MSE between them
-        self.loss_L2SHSS = self.L2loss_decay(self.B50f, self.fake_BA) * lambda_L2
-        self.loss_L2SSSH = self.L2loss_decay(self.B30f, self.fake_AB) * lambda_L2
-        self.loss_L2SHGH = self.L2loss_decay(self.B50f, self.fake_CA) * lambda_L2
-        self.loss_L2GHSH = self.L2loss_decay(self.BONE, self.fake_AC) * lambda_L2
-        self.loss_L2SHGS = self.L2loss_decay(self.B50f, self.fake_DA) * lambda_L2
-        self.loss_L2GSSH = self.L2loss_decay(self.STD, self.fake_AD) * lambda_L2
-        self.loss_L2SSGH = self.L2loss_decay(self.B30f, self.fake_CB) * lambda_L2
-        self.loss_L2GHSS = self.L2loss_decay(self.BONE, self.fake_BC) * lambda_L2
-        self.loss_L2SSGS = self.L2loss_decay(self.B30f, self.fake_DB) * lambda_L2
-        self.loss_L2GSSS = self.L2loss_decay(self.STD, self.fake_BD) * lambda_L2
-        self.loss_L2GHGS = self.L2loss_decay(self.BONE, self.fake_DC) * lambda_L2
-        self.loss_L2GSGH = self.L2loss_decay(self.STD, self.fake_CD) * lambda_L2
+        # self.loss_L2SHSS = self.L2loss_decay(self.B50f, self.fake_BA) * lambda_L2
+        # self.loss_L2SSSH = self.L2loss_decay(self.B30f, self.fake_AB) * lambda_L2
+        # self.loss_L2SHGH = self.L2loss_decay(self.B50f, self.fake_CA) * lambda_L2
+        # self.loss_L2GHSH = self.L2loss_decay(self.BONE, self.fake_AC) * lambda_L2
+        # self.loss_L2SHGS = self.L2loss_decay(self.B50f, self.fake_DA) * lambda_L2
+        # self.loss_L2GSSH = self.L2loss_decay(self.STD, self.fake_AD) * lambda_L2
+        # self.loss_L2SSGH = self.L2loss_decay(self.B30f, self.fake_CB) * lambda_L2
+        # self.loss_L2GHSS = self.L2loss_decay(self.BONE, self.fake_BC) * lambda_L2
+        # self.loss_L2SSGS = self.L2loss_decay(self.B30f, self.fake_DB) * lambda_L2
+        # self.loss_L2GSSS = self.L2loss_decay(self.STD, self.fake_BD) * lambda_L2
+        # self.loss_L2GHGS = self.L2loss_decay(self.BONE, self.fake_DC) * lambda_L2
+        # self.loss_L2GSGH = self.L2loss_decay(self.STD, self.fake_CD) * lambda_L2
         
         #Tissue statistic loss
         self.loss_segSHSS, self.loss_segSSSH = self.tissue_statistic_loss(self.B50f, self.fake_AB, self.B30f, self.fake_BA, self.B50f_mask, self.B30f_mask)
@@ -408,8 +408,6 @@ class ResnetMultipathCycleGANModel(BaseModel):
                        self.loss_G_BC + self.loss_G_CB + self.loss_cycle_BC + self.loss_cycle_CB + \
                        self.loss_G_BD + self.loss_G_DB + self.loss_cycle_BD + self.loss_cycle_DB + \
                        self.loss_G_CD + self.loss_G_DC + self.loss_cycle_CD + self.loss_cycle_DC +\
-                       self.loss_L2SHSS + self.loss_L2SSSH + self.loss_L2SHGH + self.loss_L2GHSH + self.loss_L2SHGS + self.loss_L2GSSH + \
-                       self.loss_L2SSGH + self.loss_L2GHSS + self.loss_L2SSGS + self.loss_L2GSSS + self.loss_L2GHGS + self.loss_L2GSGH + \
                        self.loss_segSHSS + self.loss_segSSSH + self.loss_segSHGH + self.loss_segGHSH + self.loss_segSHGS + self.loss_segGSSH + \
                        self.loss_segSSGH + self.loss_segGHSS + self.loss_segSSGS + self.loss_segGSSS + self.loss_segGHGS + self.loss_segGSGH
 
