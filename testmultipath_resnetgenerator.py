@@ -55,7 +55,7 @@ class GenerateInferenceMultipathGAN:
             for nii_path in tqdm(in_nii_path, total = len(in_nii_path)):
                 test_dataset = InferenceDataloader(nii_path) #Load the volume into the dataloader
                 test_dataset.load_nii()
-                test_dataloader = DataLoader(dataset=test_dataset, batch_size = 25, shuffle=False, num_workers=4) #returns the pid, normalized data and the slice index
+                test_dataloader = DataLoader(dataset=test_dataset, batch_size = 32, shuffle=False, num_workers=4) #returns the pid, normalized data and the slice index
                 converted_scan_idx_slice_map = {}
                 for i, data in enumerate(test_dataloader):
                     pid = data['pid']
@@ -74,17 +74,30 @@ class GenerateInferenceMultipathGAN:
     
 
 #the paths mentioned here are the paths to the validation dataset. These 100 subjects were used in the Medical Physics journal paper as the witheld dataset.
+# config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
+#             "siemens_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/soft/ct_masked",
+#             "ge_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/hard/ct",
+#             "ge_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/soft/ct",
+#             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
+#             "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+#             "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+#             "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+#             "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+#             "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+#             "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only"}
+
 config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
             "siemens_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/soft/ct_masked",
             "ge_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/hard/ct",
             "ge_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/soft/ct",
             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
-            "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-            "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-            "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-            "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-            "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-            "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only"}
+            "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+            "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+            "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+            "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+            "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+            "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data"}
+
 
 
 def validation():
@@ -105,10 +118,38 @@ def validation():
 
         validate_b50ftob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=b50f_enc, output_decoder=b30f_dec, inkernel="siemens_hard_100", outkernel=b50ftob30f, inct_dir_synthetic=None)
         validate_bonetob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=b30f_dec, inkernel="ge_hard_100", outkernel=bonetob30f, inct_dir_synthetic=None)
-        validate_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="siemens_soft_100", outkernel=stdtob30f, inct_dir_synthetic=None)
-        validate_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_soft_100", outkernel=bonetostd, inct_dir_synthetic=None)
+        validate_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="ge_soft_100", outkernel=stdtob30f, inct_dir_synthetic=None)
+        validate_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_hard_100", outkernel=bonetostd, inct_dir_synthetic=None)
 
-        validate_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
         validate_bonetob30f.generate_images(enc="G_GH_encoder", dec="G_SS_decoder")
+        validate_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
         validate_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
         validate_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
+
+def validation_exptwo():
+    for i in tqdm(range(2, 48, 2)): #config to run inference on model with segmentation loss only. 
+        print(f"Synthesizing images for epoch {i}......")
+        b50f_enc = os.path.join(config_fourkernels["B50f_encoder"], str(i) + "_net_gendisc_weights.pth")
+        bone_enc = os.path.join(config_fourkernels["BONE_encoder"], str(i) + "_net_gendisc_weights.pth")
+        b30f_enc = os.path.join(config_fourkernels["B30f_encoder"], str(i) + "_net_gendisc_weights.pth")
+        std_enc = os.path.join(config_fourkernels["STD_encoder"], str(i) + "_net_gendisc_weights.pth")
+        b30f_dec = os.path.join(config_fourkernels["B30f_decoder"], str(i) + "_net_gendisc_weights.pth")
+        std_dec = os.path.join(config_fourkernels["STD_decoder"], str(i) + "_net_gendisc_weights.pth")
+
+        #Run inference on the validation dataset
+        b50ftob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_identity_context_with_subset_data", "epoch_" + str(i), config_fourkernels["shss"])
+        bonetob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_identity_context_with_subset_data", "epoch_" + str(i), config_fourkernels["ghss"])
+        stdtob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_identity_context_with_subset_data", "epoch_" + str(i), config_fourkernels["gsss"])
+        bonetostd = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_identity_context_with_subset_data", "epoch_" + str(i), config_fourkernels["ghgs"])
+
+        validate_b50ftob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=b50f_enc, output_decoder=b30f_dec, inkernel="siemens_hard_100", outkernel=b50ftob30f, inct_dir_synthetic=None)
+        validate_bonetob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=b30f_dec, inkernel="ge_hard_100", outkernel=bonetob30f, inct_dir_synthetic=None)
+        validate_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="ge_soft_100", outkernel=stdtob30f, inct_dir_synthetic=None)
+        validate_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_hard_100", outkernel=bonetostd, inct_dir_synthetic=None)
+
+        validate_bonetob30f.generate_images(enc="G_GH_encoder", dec="G_SS_decoder")
+        validate_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
+        validate_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
+        validate_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
+
+validation_exptwo()
