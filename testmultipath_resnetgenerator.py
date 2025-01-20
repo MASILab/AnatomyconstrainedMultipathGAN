@@ -25,10 +25,10 @@ class GenerateInferenceMultipathGAN:
         self.outkernel = outkernel
         self.inct_dir_synthetic = inct_dir_synthetic #For emphysema analysis
 
-    def generate_images(self):
+    def generate_images(self, enc, dec):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        encoder = torch.load(self.input_encoder)
-        decoder = torch.load(self.output_decoder)
+        encoder = torch.load(self.input_encoder)[enc]
+        decoder = torch.load(self.output_decoder)[dec]
         encoderdict = OrderedDict()
         decoderdict = OrderedDict()
         for k, v in encoder.items():
@@ -72,14 +72,6 @@ class GenerateInferenceMultipathGAN:
                 test_dataset.save_scan(converted_scan_idx_slice_map, converted_image)
                 print(f"{nii_file_name} converted!")
     
-    
-    def run_validation_inference(self):
-            self.generate_images()
-            # emph_analyze = EmphysemaAnalysis(in_ct_dir=ghss, project_dir=ghss + "_emphysema")
-            # emph_analyze.generate_lung_mask()
-            # emph_analyze.get_emphysema_mask()
-            # emph_analyze.get_emphysema_measurement()
-            # print(f"Images synthsized for epoch {i}!")
 
 #the paths mentioned here are the paths to the validation dataset. These 100 subjects were used in the Medical Physics journal paper as the witheld dataset.
 config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
@@ -116,8 +108,7 @@ def validation():
         validate_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="siemens_soft_100", outkernel=stdtob30f, inct_dir_synthetic=None)
         validate_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_soft_100", outkernel=bonetostd, inct_dir_synthetic=None)
 
-        validate_b50ftob30f.run_validation_inference()
-        validate_bonetob30f.run_validation_inference()
-        validate_stdtob30f.run_validation_inference()
-        validate_bonetostd.run_validation_inference()
-    
+        validate_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
+        validate_bonetob30f.generate_images(enc="G_GH_encoder", dec="G_SS_decoder")
+        validate_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
+        validate_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
