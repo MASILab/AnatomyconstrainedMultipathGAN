@@ -9,10 +9,9 @@ from torch.utils.data import DataLoader, Dataset
 from models.networks import ResBlocklatent, ResNetEncoder, ResNetDecoder, G_decoder, G_encoder
 from collections import OrderedDict
 import torch.nn as nn
-# from utils_emphysema import EmphysemaAnalysis
+from utils_emphysema import EmphysemaAnalysis
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+
 #Use the 100 volumes in /nfs as a validation dataset. Do not reuse this dataset during testing (inference on withheld data)!
 #Evaluate various checkpoints on this dataset.
 
@@ -72,31 +71,65 @@ class GenerateInferenceMultipathGAN:
                 test_dataset.save_scan(converted_scan_idx_slice_map, converted_image)
                 print(f"{nii_file_name} converted!")
     
+    def emphysema_analysis(self):
+        emph_analyze = EmphysemaAnalysis(in_ct_dir=self.inct_dir_synthetic, project_dir=self.inct_dir_synthetic + "_emphysema")
+        emph_analyze.generate_lung_mask()
+        emph_analyze.get_emphysema_mask()
+        emph_analyze.get_emphysema_measurement()
+    
 
 #the paths mentioned here are the paths to the validation dataset. These 100 subjects were used in the Medical Physics journal paper as the witheld dataset.
-# config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
-#             "siemens_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/soft/ct_masked",
-#             "ge_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/hard/ct",
-#             "ge_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/soft/ct",
-#             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
-#             "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-#             "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-#             "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-#             "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-#             "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
-#             "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only"}
-
 config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
             "siemens_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/soft/ct_masked",
             "ge_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/hard/ct",
             "ge_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/soft/ct",
             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
-            "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
-            "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
-            "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
-            "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
-            "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
-            "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data"}
+            "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+            "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+            "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+            "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+            "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
+            "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only"}
+
+# config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
+#             "siemens_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/soft/ct_masked",
+#             "ge_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/hard/ct",
+#             "ge_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/soft/ct",
+#             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
+#             "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+#             "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+#             "BONE_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+#             "STD_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+#             "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data",
+#             "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data"}
+
+def validation_emphysema():
+        for i in tqdm(range(2, 102, 2)): #config to run inference on model with segmentation loss only. 
+            print(f"Synthesizing images for epoch {i}......")
+            b50f_enc = os.path.join(config_fourkernels["B50f_encoder"], str(i) + "_net_gendisc_weights.pth")
+            bone_enc = os.path.join(config_fourkernels["BONE_encoder"], str(i) + "_net_gendisc_weights.pth")
+            b30f_enc = os.path.join(config_fourkernels["B30f_encoder"], str(i) + "_net_gendisc_weights.pth")
+            std_enc = os.path.join(config_fourkernels["STD_encoder"], str(i) + "_net_gendisc_weights.pth")
+            b30f_dec = os.path.join(config_fourkernels["B30f_decoder"], str(i) + "_net_gendisc_weights.pth")
+            std_dec = os.path.join(config_fourkernels["STD_decoder"], str(i) + "_net_gendisc_weights.pth")
+
+            #Run inference on the validation dataset
+            b50ftob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_with_context_seg_loss_only", "epoch_" + str(i), config_fourkernels["shss"])
+            bonetob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_with_context_seg_loss_only", "epoch_" + str(i), config_fourkernels["ghss"])
+            stdtob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_with_context_seg_loss_only", "epoch_" + str(i), config_fourkernels["gsss"])
+            bonetostd = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/VALIDATION/MultipathGAN_with_context_seg_loss_only", "epoch_" + str(i), config_fourkernels["ghgs"])
+
+            validate_b50ftob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=b50f_enc, output_decoder=b30f_dec, inkernel="siemens_hard_100", outkernel=b50ftob30f, inct_dir_synthetic=b50ftob30f)
+            validate_bonetob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=b30f_dec, inkernel="ge_hard_100", outkernel=bonetob30f, inct_dir_synthetic=bonetob30f)
+            validate_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="ge_soft_100", outkernel=stdtob30f, inct_dir_synthetic=stdtob30f)
+            validate_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_hard_100", outkernel=bonetostd, inct_dir_synthetic=bonetostd)
+
+            validate_bonetob30f.emphysema_analysis()
+            #validate_b50ftob30f.emphysema_analysis()
+            #validate_stdtob30f.emphysema_analysis()
+            #validate_bonetostd.emphysema_analysis()
+
+validation_emphysema()
 
 
 
@@ -126,6 +159,7 @@ def validation():
         validate_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
         validate_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
 
+
 def validation_exptwo():
     for i in tqdm(range(2, 48, 2)): #config to run inference on model with segmentation loss only. 
         print(f"Synthesizing images for epoch {i}......")
@@ -152,4 +186,3 @@ def validation_exptwo():
         validate_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
         validate_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
 
-validation_exptwo()
