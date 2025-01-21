@@ -104,7 +104,7 @@ config_fourkernels = {"siemens_hard_100":"/nfs/masi/krishar1/Kernel_conversion_o
 #             "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_identity_context_with_subset_data"}
 
 def validation_emphysema():
-        for i in tqdm(range(2, 102, 2)): #config to run inference on model with segmentation loss only. 
+        for i in tqdm(range(196, 202, 2)): #config to run inference on model with segmentation loss only. 
             print(f"Synthesizing images for epoch {i}......")
             b50f_enc = os.path.join(config_fourkernels["B50f_encoder"], str(i) + "_net_gendisc_weights.pth")
             bone_enc = os.path.join(config_fourkernels["BONE_encoder"], str(i) + "_net_gendisc_weights.pth")
