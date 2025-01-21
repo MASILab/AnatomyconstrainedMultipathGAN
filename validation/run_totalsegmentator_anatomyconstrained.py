@@ -19,8 +19,6 @@ def make_data(image_path, list_of_files, target_path):
         os.system("cp " + source_file + " " + destination)
 
 
-
-
 def make_data_anatomyconstrained():
     bonetob30f = "/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/BONEtoB30f"
     stdtob30f = "/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/STDtoB30f"
@@ -44,5 +42,13 @@ def make_data_anatomyconstrained():
     make_data(b50ftob30f, b50ftob30f_files, tseg_b50ftob30f)
     make_data(bonetostd, bonetostd_files, tseg_bonetostd)
 
+    tseg_b50ftob30f_files = os.listdir(tseg_b50ftob30f)
+    tseg_bonetob30f_files = os.listdir(tseg_bonetob30f)
+    tseg_stdtob30f_files = os.listdir(tseg_stdtob30f)
+    tseg_bonetostd_files = os.listdir(tseg_bonetostd)
+
+    for dir in tqdm(tseg_b50ftob30f_files):
+        nift_file = os.listdir(os.path.join(tseg_b50ftob30f, dir))
+        
 
 
