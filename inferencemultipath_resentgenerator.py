@@ -15,6 +15,9 @@ import torch.nn as nn
 #Use the 100 volumes in /nfs as a validation dataset. Do not reuse this dataset during testing (inference on withheld data)!
 #Evaluate various checkpoints on this dataset.
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"    
+
 class GenerateInferenceMultipathGAN:
     def __init__(self, config, input_encoder, output_decoder, inkernel, outkernel, inct_dir_synthetic):
         self.config = config
@@ -81,8 +84,8 @@ class GenerateInferenceMultipathGAN:
 config_fourkernels_withheld_data = {
             "siemens_hard":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/B30f_B50f/hard/ct_masked",
             "siemens_soft":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/B30f_B50f/soft/ct_masked",
-            "ge_hard":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/hard/ct_masked",
-            "ge_soft":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/soft/ct_masked",
+            "ge_hard":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/hard/ct",
+            "ge_soft":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/soft/ct",
             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
             "B50f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
             "B30f_encoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
@@ -91,7 +94,7 @@ config_fourkernels_withheld_data = {
             "B30f_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only",
             "STD_decoder":"/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/MultipathGAN_with_context_seg_loss_only"}
 
-def inference():
+def inference_anatomyGAN():
     b50f_enc = os.path.join(config_fourkernels_withheld_data["B50f_encoder"], "106_net_gendisc_weights.pth")
     b30f_enc = os.path.join(config_fourkernels_withheld_data["B30f_encoder"], "106_net_gendisc_weights.pth")
     bone_enc = os.path.join(config_fourkernels_withheld_data["BONE_encoder"], "106_net_gendisc_weights.pth")
@@ -99,21 +102,21 @@ def inference():
     b30f_dec = os.path.join(config_fourkernels_withheld_data["B30f_decoder"], "106_net_gendisc_weights.pth")
     std_dec = os.path.join(config_fourkernels_withheld_data["STD_decoder"], "106_net_gendisc_weights.pth")
 
-    b50ftob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["shss"])
-    bonetob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["ghss"])
-    stdtob30f = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["gsss"])
-    bonetostd = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["ghgs"])
+    b50ftob30f_out = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["shss"])
+    bonetob30f_out = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["ghss"])
+    stdtob30f_out = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["gsss"])
+    bonetostd_out = os.path.join("/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE", config_fourkernels_withheld_data["ghgs"])
 
     # print(b50f_enc, b30f_enc, bone_enc, std_enc, b30f_dec, std_dec, b50ftob30f, bonetob30f, stdtob30f, bonetostd)
 
-    inference_b50ftob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=b50f_enc, output_decoder=b30f_dec, inkernel="siemens_hard", outkernel=b50ftob30f, inct_dir_synthetic=b50ftob30f)
-    inference_bonetob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=bone_enc, output_decoder=b30f_dec, inkernel="ge_hard", outkernel=bonetob30f, inct_dir_synthetic=bonetob30f)
-    inference_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="ge_soft", outkernel=stdtob30f, inct_dir_synthetic=stdtob30f)
-    inference_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_hard", outkernel=bonetostd, inct_dir_synthetic=bonetostd)
+    inference_b50ftob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=b50f_enc, output_decoder=b30f_dec, inkernel="siemens_hard", outkernel=b50ftob30f_out, inct_dir_synthetic=b50ftob30f_out)
+    inference_bonetob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=bone_enc, output_decoder=b30f_dec, inkernel="ge_hard", outkernel=bonetob30f_out, inct_dir_synthetic=bonetob30f_out)
+    inference_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="ge_soft", outkernel=stdtob30f_out, inct_dir_synthetic=stdtob30f_out)
+    inference_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_hard", outkernel=bonetostd_out, inct_dir_synthetic=bonetostd_out)
 
     inference_bonetob30f.generate_images(enc="G_GH_encoder", dec="G_SS_decoder")
     inference_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
     inference_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
     inference_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
 
-inference()
+inference_anatomyGAN()
