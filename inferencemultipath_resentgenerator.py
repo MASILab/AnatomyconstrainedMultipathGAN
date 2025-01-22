@@ -9,14 +9,14 @@ from torch.utils.data import DataLoader, Dataset
 from models.networks import ResBlocklatent, ResNetEncoder, ResNetDecoder, G_decoder, G_encoder
 from collections import OrderedDict
 import torch.nn as nn
-# from utils_emphysema import EmphysemaAnalysis
+from utils_emphysema import EmphysemaAnalysis
 
 
 #Use the 100 volumes in /nfs as a validation dataset. Do not reuse this dataset during testing (inference on withheld data)!
 #Evaluate various checkpoints on this dataset.
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"    
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "2"    
 
 class GenerateInferenceMultipathGAN:
     def __init__(self, config, input_encoder, output_decoder, inkernel, outkernel, inct_dir_synthetic):
@@ -74,11 +74,11 @@ class GenerateInferenceMultipathGAN:
                 test_dataset.save_scan(converted_scan_idx_slice_map, converted_image)
                 print(f"{nii_file_name} converted!")
     
-    # def emphysema_analysis(self):
-    #     emph_analyze = EmphysemaAnalysis(in_ct_dir=self.inct_dir_synthetic, project_dir=self.inct_dir_synthetic + "_emphysema")
-    #     emph_analyze.generate_lung_mask()
-    #     emph_analyze.get_emphysema_mask()
-    #     emph_analyze.get_emphysema_measurement()
+    def emphysema_analysis(self):
+        emph_analyze = EmphysemaAnalysis(in_ct_dir=self.inct_dir_synthetic, project_dir=self.inct_dir_synthetic + "_emphysema")
+        emph_analyze.generate_lung_mask()
+        emph_analyze.get_emphysema_mask()
+        emph_analyze.get_emphysema_measurement()
 
 
 config_fourkernels_withheld_data = {
@@ -114,9 +114,14 @@ def inference_anatomyGAN():
     inference_stdtob30f = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=std_enc, output_decoder=b30f_dec, inkernel="ge_soft", outkernel=stdtob30f_out, inct_dir_synthetic=stdtob30f_out)
     inference_bonetostd = GenerateInferenceMultipathGAN(config=config_fourkernels_withheld_data, input_encoder=bone_enc, output_decoder=std_dec, inkernel="ge_hard", outkernel=bonetostd_out, inct_dir_synthetic=bonetostd_out)
 
-    inference_bonetob30f.generate_images(enc="G_GH_encoder", dec="G_SS_decoder")
-    inference_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
-    inference_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
-    inference_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
+    # inference_bonetob30f.generate_images(enc="G_GH_encoder", dec="G_SS_decoder")
+    # inference_stdtob30f.generate_images(enc="G_GS_encoder", dec="G_SS_decoder")
+    # inference_b50ftob30f.generate_images(enc="G_SH_encoder", dec="G_SS_decoder")
+    # inference_bonetostd.generate_images(enc="G_GH_encoder", dec="G_GS_decoder")
+
+    inference_bonetob30f.emphysema_analysis()
+    # inference_stdtob30f.emphysema_analysis()
+    # inference_b50ftob30f.emphysema_analysis()
+    # inference_bonetostd.emphysema_analysis()
 
 inference_anatomyGAN()
