@@ -111,11 +111,12 @@ def tissue_statistics_unpaired(original_path, multipath_withanatomy, df_save_pat
     df["Patient"] = original
     df["Dice_Multipath_with_anatomy_context_Muscle"] = list(dice_multipath_with_anatomy_muscle.values())
     df["Dice_Multipath_with_anatomy_Fat"] = list(dice_multipath_with_anatomy_fat.values())
+    df.to_csv(df_save_path, index = False)
     print("Dataframe saved to", df_save_path)
 
 
 
-make_data_anatomyconstrained()
+# make_data_anatomyconstrained()
 
 tissue_statistics_unpaired(original_path = "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/hard/TotalSegtissues",
                            multipath_withanatomy="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/TotalSegtissue_unpaired/BONEtoB30f",
@@ -125,11 +126,11 @@ tissue_statistics_unpaired(original_path = "/nfs/masi/krishar1/KernelConversionU
                             multipath_withanatomy="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/TotalSegtissue_unpaired/STDtoB30f",
                             df_save_path="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/STDtoB30f.csv")
 
-tissue_statistics_unpaired(original_path = "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/B30f_B50f/hard/TotalSegtissues",
-                            multipath_withanatomy="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/TotalSegtissue_unpaired/B50ftoB30f",
-                            df_save_path="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/B50ftoB30f.csv")
+# tissue_statistics_unpaired(original_path = "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/B30f_B50f/hard/TotalSegtissues",
+#                             multipath_withanatomy="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/TotalSegtissue_unpaired/B50ftoB30f",
+#                             df_save_path="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/B50ftoB30f.csv")
 
-tissue_statistics_unpaired(original_path = "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/soft/TotalSegtissues",
-                            multipath_withanatomy="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/TotalSegtissue_unpaired/BONEtoSTD",
-                            df_save_path="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/BONEtoSTD.csv")
+# tissue_statistics_unpaired(original_path = "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/soft/TotalSegtissues",
+#                             multipath_withanatomy="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/TotalSegtissue_unpaired/BONEtoSTD",
+#                             df_save_path="/valiant02/masi/krishar1/MIDL_experiments/multipathgan_seg_identity_experiments_1-19-25/INFERENCE/BONEtoSTD.csv")
 
