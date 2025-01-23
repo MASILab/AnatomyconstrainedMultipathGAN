@@ -89,7 +89,7 @@ def rmse_ci_paired():
                 'RMSE_multipath', 'CI_low_multipath', 'CI_high_multipath',
                 'RMSE_switchgan', 'CI_low_switchgan', 'CI_high_switchgan', 
                 'RMSE_multipathwithanatomy', 'CI_low_multipathwithanatomy', 'CI_high_multipathwithanatomy'],
-        index=['B50f_B30f', 'BONE_STD', 'D_C', 'LUNG_STD']
+        index=['B50f_B30f', 'BONE_STD']
     )
 
     print(rmse_ci)
