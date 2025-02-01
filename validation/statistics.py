@@ -1,7 +1,6 @@
 from math import log10
 from scipy.interpolate import make_interp_spline
 from scipy.stats import rankdata
-from ridgeplot import ridgeplot
 from scipy.stats import wilcoxon, ranksums, mannwhitneyu 
 from skimage.metrics import mean_squared_error
 from scipy.stats import bootstrap
