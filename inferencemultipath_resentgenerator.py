@@ -9,14 +9,8 @@ from torch.utils.data import DataLoader, Dataset
 from models.networks import ResBlocklatent, ResNetEncoder, ResNetDecoder, G_decoder, G_encoder
 from collections import OrderedDict
 import torch.nn as nn
-# from utils_emphysema import EmphysemaAnalysis
+from utils_emphysema import EmphysemaAnalysis
 
-
-#Use the 100 volumes in /nfs as a validation dataset. Do not reuse this dataset during testing (inference on withheld data)!
-#Evaluate various checkpoints on this dataset.
-
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-# os.environ["CUDA_VISIBLE_DEVICES"] = "2"    
 
 class GenerateInferenceMultipathGAN:
     def __init__(self, config, input_encoder, output_decoder, inkernel, outkernel, inct_dir_synthetic):

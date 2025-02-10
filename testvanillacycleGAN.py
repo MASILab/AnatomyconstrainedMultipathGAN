@@ -66,13 +66,13 @@ class KernelConversion:
             bonetostd = os.path.join(config_fourkernels_vanillaGAN["bonetostd"], i + "_net_G_A.pth")
             bonetob30f = os.path.join(config_fourkernels_vanillaGAN["bonetob30f"], i + "_net_G_A.pth")
             stdtob30f = os.path.join(config_fourkernels_vanillaGAN["stdtob30f"], i + "_net_G_A.pth")
-            shss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + i, config_fourkernels_vanillaGAN["shss"])
+            shss = os.path.join("/path/to/val_data", "epoch_" + i, config_fourkernels_vanillaGAN["shss"])
             os.makedirs(shss, exist_ok=True)
-            ghss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + i, config_fourkernels_vanillaGAN["ghss"])
+            ghss = os.path.join("/path/to/val_data", "epoch_" + i, config_fourkernels_vanillaGAN["ghss"])
             os.makedirs(ghss, exist_ok=True)
-            gsss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + i, config_fourkernels_vanillaGAN["gsss"])
+            gsss = os.path.join("/path/to/val_data", "epoch_" + i, config_fourkernels_vanillaGAN["gsss"])
             os.makedirs(gsss, exist_ok=True)
-            ghgs = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + i, config_fourkernels_vanillaGAN["ghgs"])
+            ghgs = os.path.join("/path/to/val_data", "epoch_" + i, config_fourkernels_vanillaGAN["ghgs"])
             os.makedirs(ghgs, exist_ok=True)
             self.kernel_conversion_vanillacyclegan()
             self.kernel_conversion_vanillacyclegan()
@@ -113,82 +113,28 @@ class KernelConversion:
 
 #Validation data
 config_fourkernels_vanillaGAN = {
-    "siemens_hard_100": "/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/hard/ct_masked",
-    "siemens_soft_100": "/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/B30f_B50f/soft/ct_masked",
-    "ge_hard_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/hard/ct",
-    "ge_soft_100":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_BONE/soft/ct",
+    "siemens_hard_100": "/path/to/val_data",
+    "siemens_soft_100": "/path/to/val_data",
+    "ge_hard_100":"/path/to/val_data",
+    "ge_soft_100":"/path/to/val_data",
     "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
-    "b50tob30f": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/B50ftoB30f/vanillacycleGAN_B50ftoB30f_continue_train/",
-    "bonetostd":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/BONEtoSTD/vanillacycleGAN_BONEtoSTD_continue_train/",
-    "bonetob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/BONEtoB30f/vanillacycleGAN_BONEtoB30f_continue_train/",
-    "stdtob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/STDtoB30f/vanillacycleGAN_STDtoB30f_continue_train/",
+    "b50tob30f": "/path/to/checkpoints",
+    "bonetostd":"/path/to/checkpoints",
+    "bonetob30f":"/path/to/checkpoints",
+    "stdtob30f":"/path/to/checkpoints"
 }
 
 
 config_fourkernels_withheld_data = {
-            "siemens_hard":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/B30f_B50f/hard/ct_masked",
-            "siemens_soft":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/B30f_B50f/soft/ct_masked",
-            "ge_hard":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/hard/ct",
-            "ge_soft":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_BONE/soft/ct",
+            "siemens_hard":"/path/to/test_data",
+            "siemens_soft":"/path/to/test_data",
+            "ge_hard":"/path/to/test_data",
+            "ge_soft":"/path/to/test_data",
             "shss": "B50ftoB30f", "ghss":"BONEtoB30f", "gsss":"STDtoB30f", "ghgs":"BONEtoSTD",
-            "b50tob30f": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/B50ftoB30f/vanillacycleGAN_B50ftoB30f/",
-            "bonetostd":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/BONEtoSTD/vanillacycleGAN_BONEtoSTD/",
-            "bonetob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/BONEtoB30f/vanillacycleGAN_BONEtoB30f/",
-            "stdtob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/STDtoB30f/vanillacycleGAN_STDtoB30f/",}
-
-
-config_kernels_stage2 = {"philips_hard":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/C_D/hard/ct_masked",
-                             "philips_soft":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/C_D/soft/ct_masked",
-                             "ge_lung":"/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_LUNG/hard/ct",
-                             "g_lung_std": "/nfs/masi/krishar1/Kernel_conversion_outputs/TEST/data.application/STANDARD_LUNG/soft/ct",
-                             "phss": "DtoB30f", "psss":"CtoB30f", "glss":"LUNGtoB30f", "phps":"DtoC", "glgs":"LUNGtoSTD",
-                             "dtob30f": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/DtoB30f/vanillacycleGAN_DtoB30f/",
-                             "ctob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/CtoB30f/vanillacycleGAN_CtoB30f/",
-                             "lungtob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/LUNGtoB30f/vanillacycleGAN_LUNGtoB30f/",
-                             "dtoc":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/DtoC/vanillacycleGAN_DtoC/",
-                             "lungtostd":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/LUNGtoSTD/vanillacycleGAN_LUNGtoSTD/"}
-
-
-config_kernels_stage2_withheld_data = {
-    "philips_hard": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/C_D/hard/ct_masked",
-    "philips_soft": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/C_D/soft/ct_masked",
-    "ge_lung": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_LUNG/hard/ct",
-    "ge_lung_std": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/journal_inference_additional_data/data.application/STANDARD_LUNG/soft/ct",
-    "phss": "DtoB30f", "psss":"CtoB30f", "glss":"LUNGtoB30f", "phps":"DtoC", "glgs":"LUNGtoSTD",
-    "dtob30f": "/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/DtoB30f/vanillacycleGAN_DtoB30f/",
-    "ctob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/CtoB30f/vanillacycleGAN_CtoB30f/",
-    "lungtob30f":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/LUNGtoB30f/vanillacycleGAN_LUNGtoB30f/",
-    "dtoc":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/DtoC/vanillacycleGAN_DtoC/",
-    "lungtostd":"/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_models/vanillacycleGAN/LUNGtoSTD/vanillacycleGAN_LUNGtoSTD/"
-}
-
-
-def stagetwo_inference():
-    print("Synthesizing images for withheld test data......")
-    dtob30f = os.path.join(config_kernels_stage2_withheld_data["dtob30f"], "186_net_G_A.pth")
-    ctob30f = os.path.join(config_kernels_stage2_withheld_data["ctob30f"], "186_net_G_A.pth")
-    lungtob30f = os.path.join(config_kernels_stage2_withheld_data["lungtob30f"], "186_net_G_A.pth")
-    lungtostd = os.path.join(config_kernels_stage2_withheld_data["lungtostd"], "186_net_G_A.pth")
-    dtoc = os.path.join(config_kernels_stage2_withheld_data["dtoc"], "186_net_G_A.pth")
-
-    phss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_kernels_stage2_withheld_data["phss"])
-    #psss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_kernels_stage2_withheld_data["psss"])
-    #glss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_kernels_stage2_withheld_data["glss"])
-    #phps = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_kernels_stage2_withheld_data["phps"])
-    #glgs = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_kernels_stage2_withheld_data["glgs"])
-
-    inference_dtob30f = KernelConversion(config=config_kernels_stage2_withheld_data, generator=dtob30f, inkernel="philips_hard", outkernel=phss, inct_dir_synthetic=phss)
-    #inference_ctob30f = KernelConversion(config=config_kernels_stage2_withheld_data, generator=ctob30f, inkernel="philips_soft", outkernel=psss, inct_dir_synthetic=psss)
-    #inference_lungtob30f = KernelConversion(config=config_kernels_stage2_withheld_data, generator=lungtob30f, inkernel="ge_lung", outkernel=glss, inct_dir_synthetic=glss)
-    #inference_dtoc = KernelConversion(config=config_kernels_stage2_withheld_data, generator=dtoc, inkernel="philips_hard", outkernel=phps, inct_dir_synthetic=phps)
-    #inference_lungtostd = KernelConversion(config=config_kernels_stage2_withheld_data, generator=lungtostd, inkernel="ge_lung", outkernel=glgs, inct_dir_synthetic=glgs)
-
-    inference_dtob30f.run_withheld_test_inference()
-    #inference_ctob30f.run_withheld_test_inference()
-    #inference_lungtob30f.run_withheld_test_inference()
-    #inference_dtoc.run_withheld_test_inference()
-    #inference_lungtostd.run_withheld_test_inference()
-
+            "b50tob30f": "/path/to/checkpoints",
+            "bonetostd":"/path/to/checkpoints",
+            "bonetob30f":"/path/to/checkpoints",
+            "stdtob30f":"/path/to/checkpoints"}
 
 
 def stageone_inference():
@@ -198,10 +144,10 @@ def stageone_inference():
     bonetob30f = os.path.join(config_fourkernels_withheld_data["bonetob30f"], "120_net_G_A.pth")
     stdtob30f = os.path.join(config_fourkernels_withheld_data["stdtob30f"], "120_net_G_A.pth")
 
-    shss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_fourkernels_withheld_data["shss"])
-    ghss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_fourkernels_withheld_data["ghss"])
-    gsss = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_fourkernels_withheld_data["gsss"])
-    ghgs = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_withheldtest_data_baseline_results", config_fourkernels_withheld_data["ghgs"])
+    shss = os.path.join("/path/to/output", config_fourkernels_withheld_data["shss"])
+    ghss = os.path.join("/path/to/output", config_fourkernels_withheld_data["ghss"])
+    gsss = os.path.join("/path/to/output", config_fourkernels_withheld_data["gsss"])
+    ghgs = os.path.join("/path/to/output", config_fourkernels_withheld_data["ghgs"])
 
     inferenceb50fotb30f = KernelConversion(config_fourkernels_withheld_data, b50ftob30f, "siemens_hard", shss)
     inferencebonetob30f = KernelConversion(config_fourkernels_withheld_data, bonetob30f, "ge_hard", ghss)
@@ -212,62 +158,3 @@ def stageone_inference():
     inferencestdtob30f.run_withheld_test_inference()
     inferencebonetostd.run_withheld_test_inference()
 
-
-def validate_cycleGAN():
-    #Validation for vanilla cycleGAN models for models used in Stage 2
-    #Epochs saved in steps of 10
-    for i in tqdm(range(10,121,10)):
-        dtob30f = os.path.join(config_kernels_stage2["dtob30f"], str(i) + "_net_G_A.pth")
-        ctob30f = os.path.join(config_kernels_stage2["ctob30f"], str(i) + "_net_G_A.pth")
-        lungtob30f = os.path.join(config_kernels_stage2["lungtob30f"], str(i) + "_net_G_A.pth")
-        dtoc = os.path.join(config_kernels_stage2["dtoc"], str(i) + "_net_G_A.pth")
-        lungtostd = os.path.join(config_kernels_stage2["lungtostd"], str(i) + "_net_G_A.pth")
-
-        dtob30f_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["phss"])
-        ctob30f_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["psss"])
-        lungtob30f_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["glss"])
-        dtoc_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["phps"])
-        lungtostd_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["glgs"])
-
-        inference_dtob30f = KernelConversion(config=config_kernels_stage2, generator=dtob30f, inkernel="philips_hard", outkernel=dtob30f_out, inct_dir_synthetic=dtob30f_out)
-        inference_ctob30f = KernelConversion(config=config_kernels_stage2, generator=ctob30f, inkernel="philips_soft", outkernel=ctob30f_out, inct_dir_synthetic=ctob30f_out)
-        inference_lungtob30f = KernelConversion(config=config_kernels_stage2, generator=lungtob30f, inkernel="ge_lung", outkernel=lungtob30f_out, inct_dir_synthetic=lungtob30f_out)
-        inference_dtoc = KernelConversion(config=config_kernels_stage2, generator=dtoc, inkernel="philips_hard", outkernel=dtoc_out, inct_dir_synthetic=dtoc_out)
-        inference_lungtostd = KernelConversion(config=config_kernels_stage2, generator=lungtostd, inkernel="ge_lung", outkernel=lungtostd_out, inct_dir_synthetic=lungtostd_out)
-
-        inference_dtob30f.run_validation_inference_stage2()
-        inference_ctob30f.run_validation_inference_stage2()
-        inference_lungtob30f.run_validation_inference_stage2()
-        inference_dtoc.run_validation_inference_stage2()
-        inference_lungtostd.run_validation_inference_stage2()
-
-
-
-    #epochs saved during continued training in steps of 1
-    for i in tqdm(range(121,201,1)):
-        dtob30f = os.path.join(config_kernels_stage2["dtob30f"], str(i) + "_net_G_A.pth")
-        ctob30f = os.path.join(config_kernels_stage2["ctob30f"], str(i) + "_net_G_A.pth")
-        lungtob30f = os.path.join(config_kernels_stage2["lungtob30f"], str(i) + "_net_G_A.pth")
-        dtoc = os.path.join(config_kernels_stage2["dtoc"], str(i) + "_net_G_A.pth")
-        lungtostd = os.path.join(config_kernels_stage2["lungtostd"], str(i) + "_net_G_A.pth")
-
-        dtob30f_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["phss"])
-        ctob30f_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["psss"])
-        lungtob30f_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["glss"])
-        dtoc_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["phps"])
-        lungtostd_out = os.path.join("/nfs/masi/krishar1/KernelConversionUnpaired/SPIE_journal_extension/baseline_results/vanillacyclegan_validation_data_baseline_results", "epoch_" + str(i), config_kernels_stage2["glgs"])
-
-        inference_dtob30f = KernelConversion(config=config_kernels_stage2, generator=dtob30f, inkernel="philips_hard", outkernel=dtob30f_out, inct_dir_synthetic=dtob30f_out)
-        inference_ctob30f = KernelConversion(config=config_kernels_stage2, generator=ctob30f, inkernel="philips_soft", outkernel=ctob30f_out, inct_dir_synthetic=ctob30f_out)
-        inference_lungtob30f = KernelConversion(config=config_kernels_stage2, generator=lungtob30f, inkernel="ge_lung", outkernel=lungtob30f_out, inct_dir_synthetic=lungtob30f_out)
-        inference_dtoc = KernelConversion(config=config_kernels_stage2, generator=dtoc, inkernel="philips_hard", outkernel=dtoc_out, inct_dir_synthetic=dtoc_out)
-        inference_lungtostd = KernelConversion(config=config_kernels_stage2, generator=lungtostd, inkernel="ge_lung", outkernel=lungtostd_out, inct_dir_synthetic=lungtostd_out)
-
-        inference_dtob30f.run_validation_inference_stage2()
-        inference_ctob30f.run_validation_inference_stage2()
-        inference_lungtob30f.run_validation_inference_stage2()
-        inference_dtoc.run_validation_inference_stage2()
-        inference_lungtostd.run_validation_inference_stage2()
-
-
-stagetwo_inference()

@@ -1,14 +1,15 @@
 import os
 from data.base_dataset import BaseDataset
 from data.image_folder import make_dataset
+from PIL import Image
 import random
 import numpy as np 
 import nibabel as nib 
+from scipy.interpolate import interp1d
 import torch
 from torch.utils.data import DataLoader, Dataset
-from scipy.interpolate import interp1d
- 
- #Need to confirm if massk has to be float or int. 
+
+
 class UnalignedDataset(BaseDataset):
     """
     Dataset class for mulitpath kernel conversion. Loads in nine kernels and returns the corresponding images.
@@ -27,26 +28,14 @@ class UnalignedDataset(BaseDataset):
         self.dir_B = os.path.join(opt.dataroot, opt.phase + '_siemens_masked_soft')  
         self.dir_C = os.path.join(opt.dataroot, opt.phase + '_ge_bone_hard')
         self.dir_D = os.path.join(opt.dataroot, opt.phase + '_ge_bone_soft')
-        self.mask_dirA = os.path.join(opt.dataroot, 'siemens_hard_slices')
-        self.mask_dirB = os.path.join(opt.dataroot, 'siemens_soft_slices')
-        self.mask_dirC = os.path.join(opt.dataroot, 'ge_bone_hard_slices')
-        self.mask_dirD = os.path.join(opt.dataroot, 'ge_bone_soft_slices')
         print(self.dir_A)
         print(self.dir_B)
         print(self.dir_C)
         print(self.dir_D)
-        print(self.mask_dirA)
-        print(self.mask_dirB)
-        print(self.mask_dirC)
-        print(self.mask_dirD)
         self.A_paths = sorted(make_dataset(self.dir_A, opt.max_dataset_size))   
         self.B_paths = sorted(make_dataset(self.dir_B, opt.max_dataset_size))    
         self.C_paths = sorted(make_dataset(self.dir_C, opt.max_dataset_size))
         self.D_paths = sorted(make_dataset(self.dir_D, opt.max_dataset_size))
-        self.mask_A_paths = sorted(make_dataset(self.mask_dirA, opt.max_dataset_size))
-        self.mask_B_paths = sorted(make_dataset(self.mask_dirB, opt.max_dataset_size))
-        self.mask_C_paths = sorted(make_dataset(self.mask_dirC, opt.max_dataset_size))
-        self.mask_D_paths = sorted(make_dataset(self.mask_dirD, opt.max_dataset_size))
         self.A_size = len(self.A_paths)  # get the size of dataset A
         self.B_size = len(self.B_paths)  # get the size of dataset B
         self.C_size = len(self.C_paths)
@@ -58,17 +47,23 @@ class UnalignedDataset(BaseDataset):
         self.subset_C = int(0.2 * self.C_size)
         self.subset_D = int(0.2 * self.D_size)
 
-        self.normalizer = interp1d([-1024, 3072], [-1,1])
+        #Robust way of doing clipping 
+        self.normalizer = interp1d([-1024,3072], [-1,1])
 
     def __getitem__(self, index):
         """Return a data point and its metadata information.
+
+        Parameters:
+            index (int)      -- a random integer for data indexing
+
+        Returns a dictionary that contains A, B, A_paths and B_paths
+            A (tensor)       -- an image in the input domain
+            B (tensor)       -- its corresponding image in the target domain
+            A_paths (str)    -- image paths
+            B_paths (str)    -- image paths
         """
         # Get the dataitems for 4 domains
-        index_A = random.randint(0, self.A_size - 1)
-        # A_path = self.A_paths[index % self.A_size]
-        # A_mask_path = self.mask_A_paths[index % self.A_size]
-        A_path = self.A_paths[index_A]
-        A_mask_path = self.mask_A_paths[index_A]
+        A_path = self.A_paths[index % self.A_size]  # make sure index is within then range
         if self.opt.serial_batches:   # make sure index is within then range
             index_B = index % self.B_size
             index_C = index % self.C_size
@@ -78,23 +73,20 @@ class UnalignedDataset(BaseDataset):
             index_C = random.randint(0, self.C_size - 1)
             index_D = random.randint(0, self.D_size - 1)
         B_path = self.B_paths[index_B]
-        B_mask_path = self.mask_B_paths[index_B]
         C_path = self.C_paths[index_C]
-        C_mask_path = self.mask_C_paths[index_C]
         D_path = self.D_paths[index_D]
-        D_mask_path = self.mask_D_paths[index_D]
 
         # print("A index:",index % self.A_size)
         # print("B index:",index_B)
         # print("C index:",index_C)
         # print("D index:",index_D)
-        A, A_mask = self.normalize(A_path, A_mask_path)
-        B, B_mask = self.normalize(B_path, B_mask_path)
-        C, C_mask = self.normalize(C_path, C_mask_path)
-        D, D_mask = self.normalize(D_path, D_mask_path) 
+        A = self.normalize(A_path)
+        B = self.normalize(B_path)
+        C = self.normalize(C_path)
+        D = self.normalize(D_path) 
 
         #Return a tuple of the kernel data instead of an indivodual kernel. (Needs to be implemented)
-        return {'A': A, 'B': B, 'C': C, 'D': D, 'A_mask': A_mask, 'B_mask': B_mask, 'C_mask': C_mask, 'D_mask': D_mask,
+        return {'A': A, 'B': B, 'C': C, 'D': D,
                 'A_paths': A_path, 'B_paths': B_path, 'C_paths': C_path, 'D_paths': D_path} 
 
     def __len__(self):
@@ -103,16 +95,14 @@ class UnalignedDataset(BaseDataset):
         As we have different datasets with potentially different number of images,
         we take a maximum of all the datasets.
         """
-        # return max(self.A_size, self.B_size, self.C_size, self.D_size)
-        return max(self.subset_A, self.subset_B, self.subset_C, self.subset_D)
+        return max(self.A_size, self.B_size, self.C_size, self.D_size)
+        # return max(self.subset_A, self.subset_B, self.subset_C, self.subset_D)
 
 
-    def normalize(self, input_slice_path, input_mask_path):
+    def normalize(self, input_slice_path):
+        """Normalize input slice and return as a tensor ranging from [-1,1]"""
         nift_clip = np.clip(nib.load(input_slice_path).get_fdata()[:,:,0], -1024, 3072)
         norm = self.normalizer(nift_clip)
         tensor = torch.from_numpy(norm)
         torch_tensor = tensor.unsqueeze(0).float()
-        nift_mask = nib.load(input_mask_path).get_fdata()[:,:,0]
-        mask = torch.from_numpy(nift_mask)
-        mask_tensor = mask.unsqueeze(0).float()
-        return torch_tensor, mask_tensor
+        return torch_tensor
