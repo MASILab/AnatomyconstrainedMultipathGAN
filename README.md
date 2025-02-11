@@ -26,3 +26,14 @@ Paper:[https://openreview.net/pdf?id=w3p7GddsQ8]
 
 All the checkpoints are saved as xxx_net_gendisc_weights.pth and optimizer weights are stored as xxx_optimizer.pth
 
+
+## Citation
+@inproceedings{
+krishnan2025context,
+title={Context based harmonization of low-dose lung cancer computed tomography reconstruction kernels using multipath cycle{GAN}},
+author={Aravind Krishnan and Thomas Li and Lucas Walker Remedios and Kaiwen Xu and Lianrui Zuo and Kim L. Sandler and Fabien Maldonado and Bennett Allan Landman},
+booktitle={Submitted to Medical Imaging with Deep Learning},
+year={2025},
+url={https://openreview.net/forum?id=w3p7GddsQ8},
+note={under review}
+}
