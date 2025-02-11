@@ -9,17 +9,7 @@ Paper:[https://openreview.net/pdf?id=w3p7GddsQ8]
 ## How to prepare data: 
 1) Ensure that the images and multilabel masks are CT slices of size 512 x 512 pixels for different kinds of kernels that are available. All the images must be NIfTI (.nii.gz). TotalSegmentator must be run on all the training data and multilabel masks need to be obtained. Here is the link for TotalSegmentator on how to generate labels: [https://github.com/wasserth/TotalSegmentator]
 
-2) All images need to be in the following folder structure:
-/Training_data
-|----->Kernel_A
-       |------>pid_000.nii.gz
-       |------>pid_001.nii.gz
-       :
-       :
-       :          
-|----->Kernel_B
-|----->Kernel_C
-|----->Kernel_D
+2) All images need to follow the folder structure that the cycleGAN uses.
 
 ## Model training and testing 
 ### Training script: 004_multipathwithseglossonly.sh
